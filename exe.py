@@ -37,6 +37,7 @@ def parseargs(argv):
     parser.add_option('--nside', type = 'int', default = DEFAULT_NSIDE, help = 'Nside for skymap pix.')
 
     # Qtransform setting
+    parser.add_option('--Q', type = 'float', default = 10, help = 'Q value for qtransform')
     parser.add_option('--minf', type = 'float', default = DEFAULT_FRANGE[0], help = 'min Frequency.')
     parser.add_option('--maxf', type = 'float', default = DEFAULT_FRANGE[1], help = 'max Frequency.')
     parser.add_option('--mismatch', type = 'float', default = DEFAULT_MISMATCH, help = 'mismatch for qscan.')
@@ -109,7 +110,7 @@ def main(argv = None):
             ifos.append('V1')
     
     nside = args.nside
-    qrange = (args.minq, args.maxq)
+    Q = args.Q
     frange = (args.minf, args.maxf)
     mismatch = args.mismatch
     cmaptype = args.cmap
