@@ -137,7 +137,7 @@ def main(argv = None):
     """
     DATALOAD = False
     if graceid is not None or Sgraceid is not None:
-        from .._datasource.gracedb import GraceEvent, GraceSuperEvent
+        from ._datasource.gracedb import GraceEvent, GraceSuperEvent
         # Parsing GraceID
         if graceid is not None:
             Gevt = GraceEvent(GraceID = graceid, verbose = True)
