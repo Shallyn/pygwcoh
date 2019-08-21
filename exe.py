@@ -6,7 +6,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 from optparse import OptionParser
 import numpy as np
 import time, sys, os
-import logger
+import logging
 from ._coherent import gwStrainCoherent
 
 DEFAULT_NSIDE = 32
