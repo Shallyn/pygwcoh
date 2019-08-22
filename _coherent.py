@@ -6,11 +6,12 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 from ._datasource import load_data_from_ifo
 
 class gwStrainCoherent(object):
-    def __init__(self, epoch, duration, verbose = False):
+    def __init__(self, epoch, duration, fs, verbose = False):
         self._epoch = epoch
         self._duration = duration
         self._core = []
         self._verbose = verbose
+        self._fs = fs
     
     def __len__(self):
         return len(self._core)
@@ -25,7 +26,8 @@ class gwStrainCoherent(object):
         else:
             datadict = load_data_from_ifo(self._epoch, 
                     self._epoch + self._duration, 
-                    ifos = ifos, channel = channel)
+                    ifos = ifos, channel = channel, 
+                    fs = self._fs)
             for key in datadict:
                 self._core.append(datadict[key])
 

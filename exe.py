@@ -9,6 +9,7 @@ import time, sys, os
 import logging
 from ._coherent import gwStrainCoherent
 from ._utils import LOGGER
+from ._datasource import Template
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", 
                     datefmt="%d-%M-%Y %H:%M:%S", 
@@ -20,6 +21,13 @@ DEFAULT_PCOLORBINS = 100
 DEFAULT_CMAP = 'jet'
 DEFAULT_MISMATCH = 0.1
 FIGSIZE_QSCAN = (14,6)
+
+def get_proper_approx(m1, m2):
+    if m1 + m2 > 6:
+        return 'SEOBNRv4'
+    else:
+        return 'SpinTaylorT4'
+
 
 def parseargs(argv):
     parser = OptionParser(description='Waveform Comparation With SXS')
@@ -134,6 +142,7 @@ def main(argv = None):
     track = args.track
     injection = args.injection
 
+
     # Step.2 load data...
     """
     Three ways to load data & source parameters: m1 m2 s1z s2z gps
@@ -177,19 +186,30 @@ def main(argv = None):
                     s2z = {s2z}\n\t\
                     gps end time: {gps}')
 
+    # Setting fini_SI
+    import astropy.constants as cst
+    fini_SI = fini * cst.c.value**3 / ((m1 + m2) * cst.M_sun.value * cst.G.value)
+
+    # Setting approx
+    if approx is None:
+        approx = get_proper_approx(m1, m2)
+
     # Now let's try loading data
     tstart = gps - sback
     tend = gps + sfwd
     
     # Create Coherent Object
     logging.info(f'Builing coherent strain, {tstart} ... {tend}')
-    Strains = gwStrainCoherent(tstart, tend-tstart, verbose = True)
+    Strains = gwStrainCoherent(tstart, tend-tstart, fs = fs, verbose = True)
     if ifos is None:
         ifos = ['H1', 'L1', 'V1']
 
     logging.info(f'Loading data {ifos}')
     Strains.load_data(cache = cache, ifos = ifos, channel = channel)
-
-    for strain in Strains:
-        print(strain)
+    
+    logging.info('Generating template...')
+    tmpl = Template(m1 = m1, m2 = m2, s1z = s1z, s2z = s2z, 
+                    fini = fini_SI, approx = approx, srate = fs, 
+                    duration = 0.8 * sback)
+    logging.info(f'Get template, duration = {tmpl.duration}')
     return 0

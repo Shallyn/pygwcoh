@@ -117,6 +117,10 @@ class TimeSeries(Series):
         return self._epoch + self.x
     
     @property
+    def duration(self):
+        return self.length
+    
+    @property
     def epoch(self):
         return self._epoch
     
