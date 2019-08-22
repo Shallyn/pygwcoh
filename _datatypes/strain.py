@@ -38,6 +38,10 @@ class gwStrain(TimeSeries):
         self._sigma2 = get_sigma2(ifo)
     
     @property
+    def ifo(self):
+        return self._ifo
+
+    @property
     def ifo_latitude(self):
         return self._ifo_latitude
 
