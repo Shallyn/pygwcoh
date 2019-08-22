@@ -10,7 +10,9 @@ import logging
 from ._coherent import gwStrainCoherent
 from ._utils import LOGGER
 
-logging.basicConfig()
+logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", 
+                    datefmt="%d-%M-%Y %H:%M:%S", 
+                    level=logging.DEBUG)
 
 DEFAULT_NSIDE = 32
 DEFAULT_FRANGE = (20, 1200)
