@@ -8,6 +8,9 @@ import numpy as np
 import time, sys, os
 import logging
 from ._coherent import gwStrainCoherent
+from ._utils import LOGGER
+
+logging.basicConfig()
 
 DEFAULT_NSIDE = 32
 DEFAULT_FRANGE = (20, 1200)
@@ -142,7 +145,6 @@ def main(argv = None):
         3. If gps was specified, will trying load file directly(C00).
         4. If injection was set, will make injection.
     """
-    DATALOAD = False
     if graceid is not None or Sgraceid is not None:
         from ._datasource.gracedb import GraceEvent, GraceSuperEvent
         # Parsing GraceID
@@ -164,6 +166,12 @@ def main(argv = None):
             gps = Gevt.end_time
         if ifos is None:
             ifos = Gevt.ifos
+    LOGGER.info(f'Parameters:\n\t\
+                m1 = {m1}\n\t\
+                m2 = {m2}\n\t\
+                s1z = {s1z}\n\t\
+                s2z = {s2z}\n\t\
+                gps end time: {gps}\n')
 
     # Now let's try loading data
     tstart = gps - sback
