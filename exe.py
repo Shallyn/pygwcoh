@@ -180,7 +180,7 @@ def main(argv = None):
     tend = gps + sfwd
     
     # Create Coherent Object
-    logging.log(f'Builing coherent strain, {tstart} ... {tend}')
+    logging.info(f'Builing coherent strain, {tstart} ... {tend}')
     Strains = gwStrainCoherent(tstart, tend-tstart, verbose = True)
     if ifos is None:
         ifos = ['H1', 'L1', 'V1']
