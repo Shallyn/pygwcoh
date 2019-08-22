@@ -87,7 +87,7 @@ def main(argv = None):
     # Step.0 set logger...
 
     # Step.1 parse args...
-    logging.log('Parsing args...')
+    logging.info('Parsing args...')
     args, empty = parseargs(argv)
     ra = args.ra
     de = args.de
@@ -147,7 +147,7 @@ def main(argv = None):
         4. If injection was set, will make injection.
     """
     if graceid is not None or Sgraceid is not None:
-        logging.log('Fetch GraceDB id...')
+        logging.info('Fetch GraceDB id...')
         from ._datasource.gracedb import GraceEvent, GraceSuperEvent
         # Parsing GraceID
         if graceid is not None:
@@ -185,7 +185,7 @@ def main(argv = None):
     if ifos is None:
         ifos = ['H1', 'L1', 'V1']
 
-    logging.log(f'Loading data {ifos}')
+    logging.info(f'Loading data {ifos}')
     Strains.load_data(cache = cache, ifos = ifos, channel = channel)
 
     for strain in Strains:
