@@ -70,7 +70,11 @@ def parseargs(argv):
     # Output
     parser.add_option('--prefix', type = 'str', default = '.', help = 'prefix for results saving.')
 
+    # Log setting
+    # FIXME
+
     # Other options
+    parser.add_option('--injection', action = 'store_true', help = 'If added, will make an injection')
     parser.add_option('--track', action = 'store_true', help = 'If added, will plot track.')
 
     args = parser.parse_args(argv)
@@ -121,6 +125,8 @@ def main(argv = None):
     channel = args.channel
     cache = args.cache
 
+    track = args.track
+    injection = args.injection
 
     # Step.2 load data...
     """
@@ -134,6 +140,7 @@ def main(argv = None):
         2. If cache was specified, will read cache file to load data.
             Source parameters should be specified
         3. If gps was specified, will trying load file directly(C00).
+        4. If injection was set, will make injection.
     """
     DATALOAD = False
     if graceid is not None or Sgraceid is not None:
@@ -169,4 +176,6 @@ def main(argv = None):
 
     Strains.load_data(cache = cache, ifos = ifos, channel = channel)
 
+    for strain in Strains:
+        print(strain)
     return 0
