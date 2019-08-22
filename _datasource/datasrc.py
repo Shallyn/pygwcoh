@@ -108,21 +108,21 @@ class shmseg(object):
 
 
 def load_data_from_gwpy(gpsstart, gpsend, ifo, channel, frame, fs = 4096):
-    try:
-        data = TimeSeries.find(channel, 
-                               gpsstart, gpsend, 
-                               frametype = frame, 
-                               allow_tape=False)
-        value = data.value
-        srate = data.sample_rate.value
-        epoch = data.epoch.value
-        #duration = data.duration.value
-        ret = gwStrain(value, epoch, ifo, srate, info = f'{ifo}_strain')
-        if srate != fs:
-            return ret.resample(fs)
-        return ret
-    except:
-        return CEV.PROCESS_FAIL
+    #try:
+    data = TimeSeries.find(channel, 
+                            gpsstart, gpsend, 
+                            frametype = frame, 
+                            allow_tape=False)
+    value = data.value
+    srate = data.sample_rate.value
+    epoch = data.epoch.value
+    #duration = data.duration.value
+    ret = gwStrain(value, epoch, ifo, srate, info = f'{ifo}_strain')
+    if srate != fs:
+        return ret.resample(fs)
+    return ret
+    #except:
+        #return CEV.PROCESS_FAIL
 
 def load_data_from_shm(gpsstart, gpsend, ifo, channel, shmpath, fs = 4096):
     
