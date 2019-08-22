@@ -12,7 +12,7 @@ from scipy.interpolate import interp1d
 def resample(data, fs_old, fs_new):
     if fs_new != fs_old:
         nsamp = int(len(data) * fs_new / fs_old)
-        new = resample(data, nsamp)
+        new = scipy_resample(data, nsamp)
         return new
     else:
         return data
