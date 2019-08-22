@@ -87,6 +87,7 @@ def main(argv = None):
     # Step.0 set logger...
 
     # Step.1 parse args...
+    logging.log('Parsing args...')
     args, empty = parseargs(argv)
     ra = args.ra
     de = args.de
@@ -146,6 +147,7 @@ def main(argv = None):
         4. If injection was set, will make injection.
     """
     if graceid is not None or Sgraceid is not None:
+        logging.log('Fetch GraceDB id...')
         from ._datasource.gracedb import GraceEvent, GraceSuperEvent
         # Parsing GraceID
         if graceid is not None:
@@ -166,22 +168,24 @@ def main(argv = None):
             gps = Gevt.end_time
         if ifos is None:
             ifos = Gevt.ifos
-    LOGGER.info(f'Parameters:\n\t\
-                m1 = {m1}\n\t\
-                m2 = {m2}\n\t\
-                s1z = {s1z}\n\t\
-                s2z = {s2z}\n\t\
-                gps end time: {gps}\n')
+    logging.info(f'Parameters:\n\t\
+                    m1 = {m1}\n\t\
+                    m2 = {m2}\n\t\
+                    s1z = {s1z}\n\t\
+                    s2z = {s2z}\n\t\
+                    gps end time: {gps}')
 
     # Now let's try loading data
     tstart = gps - sback
     tend = gps + sfwd
     
     # Create Coherent Object
+    logging.log(f'Builing coherent strain, {tstart} ... {tend}')
     Strains = gwStrainCoherent(tstart, tend-tstart, verbose = True)
     if ifos is None:
         ifos = ['H1', 'L1', 'V1']
 
+    logging.log(f'Loading data {ifos}')
     Strains.load_data(cache = cache, ifos = ifos, channel = channel)
 
     for strain in Strains:

@@ -20,7 +20,7 @@ class gwStrainCoherent(object):
             yield strain
         
     def load_data(self, cache = None, ifos = None, channel = 'GATED'):
-        if cache is None:
+        if cache is not None:
             pass
         else:
             datadict = load_data_from_ifo(self._epoch, 
