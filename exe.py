@@ -11,7 +11,7 @@ import time, sys, os
 import logging
 from ._coherent import gwStrainCoherent
 from ._utils import LOGGER
-from ._datasource import Template, get_refpsd
+from ._datasource import Template, get_refpsd, get_refpsd_from_dir
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
@@ -227,7 +227,11 @@ def main(argv = None):
         LOGGER.error('reference-psd was not specified\n')
         return -1
     logging.info('Setting psd')
-    psddict = get_refpsd(refpsd)
+    refpsd = Path(refpsd)
+    if refpsd.is_dir():
+        psddict = get_refpsd_from_dir(refpsd, channel = channel)
+    else:
+        psddict = get_refpsd(refpsd)
     Strains.set_psd(psddict)
 
     # Step.3 Making Template
@@ -269,7 +273,6 @@ def main(argv = None):
     for snr in SNRs:
         snr.plot(epoch = gps, fsave = fsave / f'SNR_{snr.ifo}.png', 
             pset = 'abs')
-    return 0
 
     """
     Step.3 Qscan...

@@ -3,6 +3,7 @@ This is the module for gravitational wave coherent search.
 Writer: Shallyn(shallyn.liu@foxmail.com)
 """
 
+import numpy as np
 from glue.ligolw import ligolw
 from glue.ligolw.array import get_array
 from glue.ligolw import utils as ligolw_utils
@@ -31,3 +32,19 @@ def get_refpsd(refpsd):
             retdict[str(ifo)] = fpsd
     return retdict
 
+def get_refpsd_from_dir(fdir, channel = 'CALIB'):
+    fdir = Path(fdir)
+    fout = []
+    for file in fdir.iterdir():
+        if channel in file.name.split('_'):
+            fout.append(file)
+    if len(fout) == 0:
+        raise ValueError('No such channel data file')
+    out = dict()
+    for file in fout:
+        for ifo in ['H1', 'L1', 'V1']:
+            if ifo in file.name.split('_'):
+                datapsd = np.loadtxt(file)
+                psd = interp1d(datapsd[0,:], datapsd[1,:])
+                out[ifo] = psd
+    return out
