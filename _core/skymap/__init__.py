@@ -3,6 +3,7 @@ This is the module for gravitational wave coherent search.
 Writer: Shallyn(shallyn.liu@foxmail.com)
 """
 
+import numpy as np
 from .pix import nside2npix, pix2ang
 from .skymap import mollview, graticule, MollweideProj
 
