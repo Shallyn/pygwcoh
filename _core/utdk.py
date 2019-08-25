@@ -31,11 +31,11 @@ def calc_sngl_Gpc_and_shift_python(gwSNR, times, ra_pix, de_pix, gps_geocent):
 
     for k, (ra, de) in enumerate(zip(ra_pix, de_pix)):
         ar, delay = gwSNR.ifo_get_at_and_delay(ra, de, 0, gps_geocent)
-        Gpc_matrix[k, 0] = ar[0]
-        Gpc_matrix[k, 1] = ar[1]
+        Gpc_sngl[k, 0] = ar[0]
+        Gpc_sngl[k, 1] = ar[1]
         snr_sngl[:, k] = fitp(times + delay)
         Progress(k, npix, 'Calculating Gpc')
-    sys.stderr.write('\r\n')
+    sys.stderr.write('\r')
     return Gpc_sngl, snr_sngl
 
 def calc_sngl_shift(ifo, snr, times, ra, de, gps_trigger):
