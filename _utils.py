@@ -125,6 +125,42 @@ class CEV_Array(object):
             raise ValueError(('Negative start index ({}) is not supported').format(index.start))        
         return CEV_Array(self._array[index])
 
+#-----Progress-----#
+def Progress_with_bar(itr,N):
+    arrow = '|'
+    pcg_str = '%.2f'%min( 100, float(101*itr/N)) 
+    pcg = float(pcg_str)
+    for i in range(50):
+        if 2 * i < pcg:
+            arrow += '>'
+        else:
+            arrow += ' '
+    arrow += '|'
+    sys.stderr.write('\r')
+    sys.stderr.write(pcg_str+ '%|'+arrow)
+    sys.stderr.flush()
+    time.sleep(0.02)
+    
+def Progress(itr,N, remarks = ''):
+    pcg_str = '%.2f'%min( 100, float(101*itr/N)) 
+    sys.stderr.write('\r')
+    sys.stderr.write(f'{remarks}|{pcg_str}%|')
+    sys.stderr.flush()
+    time.sleep(0.02)
+    
+def Progress_time(dt, itr, N, remarks = None):
+    tr_str = '%.1f'%( (dt+0.02) * (N-itr) / 60)
+    pcg_str = '%.2f'%min(100, float(101*itr/N))
+    sys.stderr.write('\r')
+    if remarks is None:
+        printout = pcg_str+ '%|time remain: '+tr_str+' min'
+    else:
+        printout = pcg_str+ '%|time remain: '+tr_str+' min-' + remarks
+    sys.stderr.write(printout)
+    sys.stderr.flush()
+    time.sleep(0.02)
+
+
 #------command line tools-------#
 def CallCommand(CMD, out = None, err = None, timeout = 60):
     if isinstance(out, str):

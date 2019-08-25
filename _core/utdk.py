@@ -5,7 +5,8 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 
 import numpy as np
 from .._datatypes.detector import Detector
-from .._utils import LOGGER, interp1d_complex
+from .._utils import LOGGER, interp1d_complex, Progress
+import sys
 
 try:
     from . import _PyGWCOH as pg
@@ -33,6 +34,8 @@ def calc_sngl_Gpc_and_shift_python(gwSNR, times, ra_pix, de_pix, gps_geocent):
         Gpc_matrix[k, 0] = ar[0]
         Gpc_matrix[k, 1] = ar[1]
         snr_sngl[:, k] = fitp(times + delay)
+        Progress(k, npix, 'Calculating Gpc')
+    sys.stderr.write('\r\n')
     return Gpc_sngl, snr_sngl
 
 def calc_sngl_shift(ifo, snr, times, ra, de, gps_trigger):
