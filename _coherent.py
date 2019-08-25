@@ -81,9 +81,6 @@ class gwStrainCoherent(object):
         ra_pix = phi-np.pi
         de_pix = -theta+np. pi / 2
         ndet = len(self)
-        Gpc_matrix = np.zeros([npix, ndet, 2], np.float)
-        snr_matrix = np.zeros([ntime, npix, ndet], np.complex)
-        retSNR = []
 
         if trange is None:
             sback = np.min(gps_trigger - self._epoch, DEFAULT_SBACK)
@@ -95,6 +92,10 @@ class gwStrainCoherent(object):
         if sback < 0 or sfwd < 0:
             raise Exception(f'Invalid trange: ({sback}, {sfwd})')
         geocent_times = np.arange(gps_trigger - sback, gps_trigger + sfwd, 1./self._fs)
+        ntime = len(geocent_times)
+        Gpc_matrix = np.zeros([npix, ndet, 2], np.float)
+        snr_matrix = np.zeros([ntime, npix, ndet], np.complex)
+        retSNR = []
 
         for i, strain in enumerate(self):
             #stilde, hrtilde, hitilde, power_vec = \
