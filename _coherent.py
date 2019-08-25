@@ -129,11 +129,11 @@ class gwStrainCoherent(object):
         return
             (spec_ifo1, spec_ifo2, ...), coh_spec[trange]
         """
-        psd = kwargs('psd', 'set')
-        cut = kwargs('cut', None)
-        window = kwargs('window', True)
-        frange = kwargs('frange', None)
-        mismatch = kwargs('mismatch', None)
+        psd = kwargs.pop('psd', 'set')
+        cut = kwargs.pop('cut', None)
+        window = kwargs.pop('window', True)
+        frange = kwargs.pop('frange', None)
+        mismatch = kwargs.pop('mismatch', None)
 
         if trange is None:
             sback = np.min(gps_trigger - self._epoch, DEFAULT_SBACK)
