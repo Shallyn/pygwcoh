@@ -94,6 +94,7 @@ def parseargs(argv):
     # Other options
     parser.add_option('--injection', action = 'store_true', help = 'If added, will make an injection')
     parser.add_option('--track', action = 'store_true', help = 'If added, will plot track.')
+    parser.add_option('--dimless', action = 'store_true', help = 'If added, will use nature dimemsion unit for initial frequency.')
 
     args = parser.parse_args(argv)
     return args
@@ -146,7 +147,7 @@ def main(argv = None):
 
     track = args.track
     injection = args.injection
-
+    dimless = args.dimless
 
     # Step.2 load data...
     """
@@ -197,7 +198,10 @@ def main(argv = None):
 
     # Setting fini_SI
     import astropy.constants as cst
-    fini_SI = fini * cst.c.value**3 / ((m1 + m2) * cst.M_sun.value * cst.G.value)
+    if dimless:
+        fini_SI = fini * cst.c.value**3 / ((m1 + m2) * cst.M_sun.value * cst.G.value)
+    else:
+        fini_SI = fini
 
     # Setting approx
     if approx is None:
@@ -224,7 +228,7 @@ def main(argv = None):
     logging.info('Setting psd')
     psddict = get_refpsd(refpsd)
     Strains.set_psd(psddict)
-    return 0
+
     # Step.3 Making Template
     logging.info('Generating template...')
     tmpl = Template(m1 = m1, m2 = m2, s1z = s1z, s2z = s2z, 
@@ -242,18 +246,21 @@ def main(argv = None):
     fsave = Path(prefix)
     if not fsave.exists():
         fsave.mkdir(parents=True)
+        logging.info(f'mkdir for output prefix {fsave}')
+    else:
+        logging.info(f'Output prefix {fsave} exists.')
 
     # plot setting
     cmap = plt.get_cmap(cmaptype)
 
     """
-    Step.1 Matched filtering...
+    Step.1 Matched filtering & Skymap
     """
     # Call...
-    
+    SNRs, skymap = Strains.calc_coherent_snr_skymap(tmpl, nside, gps)
 
     """
-    Step.2 Skymap...
+    Step.2 Plot SNR & Skymap...
     """
 
     """
