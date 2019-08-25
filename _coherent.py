@@ -180,7 +180,7 @@ class gwStrainCoherent(object):
         u_matrix[:,:] = u
         coh = np.zeros([nfreq, ntime, ndet, ndet], np.complex)
         for i in range(ndet):
-            coh[:,:,:,i] = np.multiply(u[:,:,:,i], spec_matrix)
+            coh[:,:,:,i] = np.multiply(u_matrix[:,:,:,i], spec_matrix)
         coh = np.sum(coh, axis=2)
         coh2 = np.multiply(coh, coh.conjugate()).real
         cohspec_array = np.sqrt(np.sum(coh2[:,:,:2], axis=2))
