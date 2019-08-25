@@ -271,9 +271,9 @@ def main(argv = None):
     logging.info('Ploting coherent SNR skymap & SNR time series...')
     skymap.plot_skymap(fsave, plot_peak = True)
     for snr in SNRs:
-        snr.plot(epoch = gps, fsave = fsave / f'SNR_{snr.ifo}.png', 
+        snr.plot(fsave = fsave / f'SNR_{snr.ifo}.png', 
             pset = 'abs')
-        snr.plot(epoch = gps, fsave = fsave / f'SNR_{snr.ifo}_zoom.png',
+        snr.plot(fsave = fsave / f'SNR_{snr.ifo}_zoom.png',
             pset = 'abs', xrange = [gps - trange_peak[0], gps + trange_peak[1]])
 
     """
