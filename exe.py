@@ -283,7 +283,7 @@ def main(argv = None):
     Step.3 Qscan...
     """
     logging.info('Q matched filtering & Coherent...')
-    max_ra,max_de = Skymap.max_ra_de
+    max_ra,max_de = skymap.max_ra_de
     SPECs, cohSPEC = \
         Strains.calc_coherent_snr_qspectrum(tmpl, Q, gps, max_ra, max_de, trange = trange_duration)
 
