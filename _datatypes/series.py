@@ -357,13 +357,16 @@ class TimeFreqSpectrum(MultiSeries):
         return interp2d_complex(xp, yp, zp)
 
     def plot_spectrum(self, times, freqs,
-                      figsize, fsave
+                      fsave,
+                      figsize = None, 
                       cmaptype = 'jet',
                       xlabel = None, ylabel = None,
                       xlim = None, ylim = None,
                       yticks = None,
                       title = None):
         # plot setting
+        if figsize is None:
+            figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)
         levels = MaxNLocator(nbins=pcolorbins).tick_values(coh_oscan.min(), coh_oscan.max())
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
