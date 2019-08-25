@@ -148,7 +148,7 @@ class gwStrainCoherent(object):
 
         retSPEC = [CreateEmptySpectrum(strain.ifo) for strain in self]
         frequencies = []
-        for idxf, (shift, qtile) in tmpl.iter_fftQPlane(q = q, 
+        for shift, qtile in tmpl.iter_fftQPlane(q = q, 
                                                 duration = self._duration,
                                                 fs = self._fs,
                                                 frange = frange,
