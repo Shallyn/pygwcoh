@@ -29,7 +29,7 @@ def calc_sngl_Gpc_and_shift_python(gwSNR, times, ra_pix, de_pix, gps_geocent):
     fitp = interp1d_complex(gwSNR.time, gwSNR.value)
 
     for k, (ra, de) in enumerate(zip(ra_pix, de_pix)):
-        ar, delay = gwSNR.ifo_get_at_and_delay(ra, de, 0, gps_trigger)
+        ar, delay = gwSNR.ifo_get_at_and_delay(ra, de, 0, gps_geocent)
         Gpc_matrix[k, 0] = ar[0]
         Gpc_matrix[k, 1] = ar[1]
         snr_sngl[:, k] = fitp(times + delay)
