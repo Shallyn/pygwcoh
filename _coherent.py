@@ -9,7 +9,7 @@ from ._core.skymap import nside2npix, pix2ang, Skymap
 from ._core.utdk import calc_sngl_Gpc_and_shift, calc_sngl_shift
 from ._datatypes.strain import CreateEmptySpectrum
 from ._datatypes.series import TimeFreqSpectrum
-from ._utils import interp2d_complex
+from ._utils import interp2d_complex, LOGGER
 
 DEFAULT_SBACK = 0.5
 DEFAULT_SFWD = 0.5
@@ -42,7 +42,10 @@ class gwStrainCoherent(object):
                 
     def set_psd(self, refpsd):
         for strain in self:
-            pass
+            if strain.ifo in refpsd:
+                strain.set_psd(refpsd[strain.ifo])
+            else:
+                LOGGER.warning(f'Cannot set psd for strain {strain.ifo}\n')
 
     def iter_matched_filter(self, tmpl, **kwargs):
         """

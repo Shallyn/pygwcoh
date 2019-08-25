@@ -220,11 +220,11 @@ def main(argv = None):
     # Setting psd
     if refpsd is None:
         LOGGER.error('reference-psd was not specified\n')
+        return -1
     logging.info('Setting psd')
     psddict = get_refpsd(refpsd)
-    return 0
     Strains.set_psd(psddict)
-    
+    return 0
     # Step.3 Making Template
     logging.info('Generating template...')
     tmpl = Template(m1 = m1, m2 = m2, s1z = s1z, s2z = s2z, 
