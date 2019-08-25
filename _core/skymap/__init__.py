@@ -4,7 +4,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 """
 
 import numpy as np
-from .pix import nside2npix, pix2ang
+from .pix import nside2npix, pix2ang, npix2nside
 from .skymap import mollview, graticule, MollweideProj
 from pathlib import Path
 
@@ -20,6 +20,7 @@ class Skymap(object):
     def __init__(self, utdk2):
         self._projector  = MollweideProj()
         self._coh_snr_pix = np.sqrt(np.sum(utdk2[:,:,:2], axis = 2).max(axis=0))
+        self._nside = npix2nside(len(self._coh_snr_pix))
         self._NULL = False
         if utdk2.shape[2] > 2:
             self._NULL = True
@@ -36,13 +37,14 @@ class Skymap(object):
                     ra_inj = None,
                     de_inj = None):
         prefix = Path(prefix)
-        mollview(self._coh_snr_pix,title=f'Coherent SNR, max = ({max_ra},{max_de})')
-        graticule(coord='G',local=True)
         if plot_peak:
-            max_de,max_ra = pix2ang(nside,np.argmax(self._coh_snr_pix))
+            max_de,max_ra = pix2ang(self._nside,np.argmax(self._coh_snr_pix))
             max_de = max_de[0]
             max_ra = max_ra[0]
             x1,y1 = self._projector.ang2xy(np.array([max_de, max_ra]))
+        mollview(self._coh_snr_pix,title=f'Coherent SNR, max = ({max_ra},{max_de})')
+        graticule(coord='G',local=True)
+        if plot_peak:
             plt.plot(x1,y1,'rx')
 
         if ra_inj is not None and de_inj is not None:

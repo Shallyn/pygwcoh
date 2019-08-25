@@ -42,6 +42,9 @@ def fmodulo(v1, v2):
 def nside2npix(nside):
     return 12 * nside * nside
 
+def npix2nside(npix):
+    return int(np.sqrt(npix / 12))
+
 def loc2pix(z, phi, sth, have_sth, Hpix):
     za = abs(z)
     tt = fmodulo(phi*2 / np.pi, 4.0) # in [0,4)
