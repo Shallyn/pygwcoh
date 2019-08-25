@@ -146,7 +146,7 @@ class gwStrainCoherent(object):
             raise Exception(f'Invalid trange: ({sback}, {sfwd})')
         geocent_times = np.arange(gps_trigger - sback, gps_trigger + sfwd, 1./self._fs)
 
-        retSPEC = [CreateEmptySpectrum(strain.ifo) for strain in self]
+        retSPEC = [CreateEmptySpectrum(strain.ifo, info = None) for strain in self]
         frequencies = []
         for shift, qtile in tmpl.iter_fftQPlane(q = q, 
                                                 duration = self._duration,

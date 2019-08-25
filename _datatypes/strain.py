@@ -205,6 +205,9 @@ class gwStrainSpectrum(TimeFreqSpectrum):
             self._psdfun_set = None
             self._sigma2 = None
 
+    @property
+    def ifo(self):
+        return self._ifo
 
     @property
     def ifo_latitude(self):
@@ -239,10 +242,12 @@ class gwStrainSpectrum(TimeFreqSpectrum):
 
         
 
-def CreateEmptySpectrum(ifo):
+def CreateEmptySpectrum(ifo, info = None):
+    if info is None:
+        info = f'{ifo}_StrainSpectrum'
     array = np.array([])
     freqs = None
     epoch = None
     fs = 1
-    empty = gwStrainSpectrum(ifo, array, epoch, fs, freqs, info = f'{ifo}_StrainSpectrum')
+    empty = gwStrainSpectrum(ifo, array, epoch, fs, freqs, info = info)
     return empty
