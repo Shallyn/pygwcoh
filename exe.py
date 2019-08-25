@@ -21,7 +21,7 @@ logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s",
                     datefmt="%d-%M-%Y %H:%M:%S", 
                     level=logging.DEBUG)
 
-DEFAULT_NSIDE = 32
+DEFAULT_NSIDE = 16
 DEFAULT_FRANGE = (20, 1200)
 DEFAULT_PCOLORBINS = 100
 DEFAULT_CMAP = 'jet'
