@@ -174,7 +174,7 @@ class gwStrainCoherent(object):
         for i, strain in enumerate(self):
             ar, delay = strain.ifo_get_at_and_delay(ra, de, 0, gps_trigger)
             Gpc_matrix[i,:] = np.asarray(ar) * np.sqrt(strain.sigma2)
-            spec_matrix[:, :, i] = retSPEC[i].interp(geocent_times + delay)
+            spec_matrix[:, :, i] = retSPEC[i].interpolate(geocent_times + delay)
         u,s,v = np.linalg.svd(Gpc_matrix)
         u_matrix = np.zeros([nfreq, ntime, ndet, ndet], u.dtype)
         u_matrix[:,:] = u
