@@ -240,7 +240,9 @@ def main(argv = None):
                     fini = fini_SI, approx = approx, srate = fs, 
                     duration = 0.8 * sback)
     logging.info(f'Get template, duration = {tmpl.duration}')
-
+    track_x, track_y = tmpl.track
+    trange_peak = [min(4/max(track_y), sback), min(4/max(track_y), sfwd)]
+    trange_duration = [min(tmpl.duration, sback), min(1, sfwd)]
     """
     Preparatory work complete
     Now let's start data analysis.
@@ -263,7 +265,8 @@ def main(argv = None):
     """
     # Call...
     logging.info('Matched filtering & Coherent...')
-    SNRs, skymap = Strains.calc_coherent_snr_skymap(tmpl, nside, gps)
+    SNRs, skymap = \
+        Strains.calc_coherent_snr_skymap(tmpl, nside, gps)
 
     """
     Step.2 Plot SNR & Skymap...
@@ -273,10 +276,16 @@ def main(argv = None):
     for snr in SNRs:
         snr.plot(epoch = gps, fsave = fsave / f'SNR_{snr.ifo}.png', 
             pset = 'abs')
+        snr.plot(epoch = gps, fsave = fsave / f'SNR_{snr.ifo}_zoom.png',
+            pset = 'abs', xrange = [gps - trange_peak[0], gps - trange_peak[1]])
 
     """
     Step.3 Qscan...
     """
+    logging.info('Q matched filtering & Coherent...')
+    max_ra,max_de = Skymap.max_ra_de
+    SPECs, cohSPEC = \
+        Strains.calc_coherent_snr_qspectrum(tmpl, Q, gps, max_ra, max_de, trange = trange_duration)
 
     """
     Step. Coherent Qscan
