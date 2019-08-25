@@ -355,6 +355,7 @@ class TimeFreqSpectrum(MultiSeries):
         xp = self.times
         yp = self.frequencies
         zp = self.interpolate(xp)
+        print(zp.dtype)
         if zp.dtype == complex:
             return interp2d_complex(xp, yp, zp)
         else:
