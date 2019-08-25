@@ -10,6 +10,10 @@ from .._core.filter import padinsert, cutinsert, correlate_real, get_psdfun
 from .._core import resample
 from scipy import signal
 
+import matplotlib.pyplot as plt
+from matplotlib.colors import BoundaryNorm
+from matplotlib.ticker import MaxNLocator
+
 
 # H1-118 L1-150 V1-53
 def get_sigma2(ifo):
@@ -89,7 +93,29 @@ class gwStrain(TimeSeries):
             return gwStrain(new, self.epoch, self.ifo, fs, info = self._info)
         else:
             return self
+    
+    def plot(self, epoch, fsave,
+             xrange = None, yrange = None,
+             xlabel = None, ylabel = None,
+             figsize = None, pset = None,
+             title = None):
+        if figsize = None:
+            figsize = (10, 5)
+        if pset in (None, 'origin',):
+            val = self.value
+        if pset in ('abs', 'snr'):
+            val = np.abs(self.value)
+        if title is None:
+            title = self._info
+        plt.figure(figsize = figsize)
+        plt.plot(self.time, val)
+        plt.xlim(xrange)
+        plt.ylim(yrange)
+        plt.title(title)
+        plt.savefig(fsave, dpi = 200)
+        plt.close()
 
+    
     def matched_filter(self,
                        tmpl,
                        cut = None,

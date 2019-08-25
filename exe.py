@@ -266,9 +266,10 @@ def main(argv = None):
     """
     logging.info('Ploting coherent SNR skymap & SNR time series...')
     skymap.plot_skymap(prefix, plot_peak = True)
-    return 0
     for snr in SNRs:
-        pass
+        snr.plot(epoch = gps, fsave = prefix / f'SNR_{snr.ifo}.png', 
+            pset = 'abs')
+    return 0
 
     """
     Step.3 Qscan...
