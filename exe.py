@@ -258,11 +258,17 @@ def main(argv = None):
     Step.1 Matched filtering & Skymap
     """
     # Call...
+    logging.info('Matched filtering & Coherent...')
     SNRs, skymap = Strains.calc_coherent_snr_skymap(tmpl, nside, gps)
 
     """
     Step.2 Plot SNR & Skymap...
     """
+    logging.info('Ploting coherent SNR skymap & SNR time series...')
+    skymap.plot_skymap(prefix, plot_peak = True)
+    return 0
+    for snr in SNRs:
+        pass
 
     """
     Step.3 Qscan...
