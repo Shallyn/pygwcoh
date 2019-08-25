@@ -153,6 +153,7 @@ class gwStrainCoherent(object):
                                                 fs = self._fs,
                                                 frange = frange,
                                                 mismatch = mismatch):
+            freq = qtile.frequency
             qwindow = qtile.get_window()
             frequencies.append(freq)
             for i, strain in enumerate(self):

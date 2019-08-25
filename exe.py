@@ -242,9 +242,7 @@ def main(argv = None):
     logging.info(f'Get template, duration = {tmpl.duration}')
     track_x, track_y = tmpl.track
     trange_peak = [min(4/max(track_y), sback), min(4/max(track_y), sfwd)]
-    LOGGER.info(f'trange_peak = {trange_peak}\n')
     trange_duration = [min(tmpl.duration, sback), min(1, sfwd)]
-    LOGGER.info(f'trange_dur = {trange_duration}\n')
 
     """
     Preparatory work complete
