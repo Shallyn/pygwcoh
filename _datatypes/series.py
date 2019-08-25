@@ -368,8 +368,6 @@ class TimeFreqSpectrum(MultiSeries):
         if figsize is None:
             figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)
-        levels = MaxNLocator(nbins=pcolorbins).tick_values(coh_oscan.min(), coh_oscan.max())
-        norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
         if yticks is None:
             yticksval = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 5)
             yticks = (yticksval, ['%.1f'%_freq for _freq in fticksval])
@@ -386,6 +384,8 @@ class TimeFreqSpectrum(MultiSeries):
             snrpeak = '%.3f'%z[idx_tpeak_0, idx_fpeak_0]
             label = f'loudest snr = {snrpeak}, at geocent gps = {tpeak}, f = {fpeak}'
 
+        levels = MaxNLocator(nbins=pcolorbins).tick_values(z.min(), z.max())
+        norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
 
         fig = plt.figure(figsize = figsize)
         ax = fig.add_subplot(111)
