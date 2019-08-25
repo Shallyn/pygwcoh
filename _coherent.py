@@ -38,7 +38,7 @@ class gwStrainCoherent(object):
                     ifos = ifos, channel = channel, 
                     fs = self._fs)
             for key in datadict:
-                self._core.append(datadict[key])
+                self._data.append(datadict[key])
                 
     def set_psd(self, refpsd):
         for strain in self:
@@ -53,7 +53,7 @@ class gwStrainCoherent(object):
 
     def matched_filter(self, tmpl, **kwargs):
         for snr in self.iter_matched_filter(tmpl, **kwargs):
-            self._core.appendSNR(snr)
+            self._data.appendSNR(snr)
         
     def iter_qfilter(self, tmpl, q, **kwargs):
         for strain in self:
