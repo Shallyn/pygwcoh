@@ -7,6 +7,8 @@ import numpy as np
 from .pix import nside2npix, pix2ang, npix2nside
 from .skymap import mollview, graticule, MollweideProj
 from pathlib import Path
+import matplotlib.pyplot as plt
+
 
 __all__ = ['nside2npix', 
            'pix2ang', 
