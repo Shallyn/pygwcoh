@@ -351,11 +351,13 @@ class TimeFreqSpectrum(MultiSeries):
             ret[i, :] = np.interp(t_interp, self.x + epoch, self._array[i,:])
         return ret
 
-    def get_finterp(self):
+    def get_finterp(self, pset = None):
         xp = self.times
         yp = self.frequencies
         zp = self.interpolate(xp)
-        print(zp.dtype)
+        if pset in ('abs',):
+            zp = np.abs(zp)
+
         if zp.dtype == complex:
             return interp2d_complex(xp, yp, zp)
         else:
@@ -381,7 +383,7 @@ class TimeFreqSpectrum(MultiSeries):
 
         x = times
         y = freqs
-        z = self.get_finterp()(x,y)
+        z = self.get_finterp(pset = 'abs')(x,y)
         if xlabel is None:
             idx_tpeak_0, idx_fpeak_0 = get_2D_argpeak(z)
             tpeak = '%.2f'%x[idx_tpeak_0]
