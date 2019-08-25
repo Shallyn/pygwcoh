@@ -3,6 +3,7 @@ This is the module for gravitational wave coherent search.
 Writer: Shallyn(shallyn.liu@foxmail.com)
 """
 
+import numpy as np
 from ._datasource import load_data_from_ifo
 from ._core.filter import correlate_real
 from ._core.skymap import nside2npix, pix2ang, Skymap
