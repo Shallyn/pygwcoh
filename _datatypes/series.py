@@ -143,6 +143,8 @@ class MultiSeries(object):
             else:
                 array = np.array([])
                 self._isempty = True
+        else:
+            self._isempty = False
         self._array = array
         if not self._isempty:
             self._deltax = deltax
