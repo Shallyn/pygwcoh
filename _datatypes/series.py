@@ -5,7 +5,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 
 import numpy as np
 from .._core import resample
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, interp2d
 from .._utils import interp2d_complex
 
 import matplotlib.pyplot as plt
@@ -355,7 +355,10 @@ class TimeFreqSpectrum(MultiSeries):
         xp = self.times
         yp = self.frequencies
         zp = self.interpolate(xp)
-        return interp2d_complex(xp, yp, zp)
+        if zp.dtype == np.comples:
+            return interp2d_complex(xp, yp, zp)
+        else:
+            return interp2d(xp, yp, zp)
 
     def plot_spectrum(self, times, freqs,
                       fsave,
