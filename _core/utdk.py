@@ -26,7 +26,7 @@ def calc_sngl_Gpc_and_shift_python(gwSNR, times, ra_pix, de_pix, gps_geocent):
     npix = len(ra_pix)
     Gpc_sngl = np.zeros([npix, 2], np.float)
     snr_sngl = np.zeros([ntime, npix], gwSNR.value.dtype)
-    fitp = interp1d_complex(times, gwSNR.value)
+    fitp = interp1d_complex(gwSNR.time, gwSNR.value)
 
     for k, (ra, de) in enumerate(zip(ra_pix, de_pix)):
         ar, delay = gwSNR.ifo_get_at_and_delay(ra, de, 0, gps_trigger)
