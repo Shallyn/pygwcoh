@@ -139,9 +139,9 @@ class gwStrainCoherent(object):
             sback = np.min(gps_trigger - self._epoch, DEFAULT_SBACK)
             sfwd = np.min(self._epoch + self._duration - gps_trigger, DEFAULT_SFWD)
         elif isinstance(trange, np.float) or isinstance(trange, np.int):
-            sback = sfwd = frange
+            sback = sfwd = trange
         else:
-            sback, sfwd = frange
+            sback, sfwd = trange
         if sback < 0 or sfwd < 0:
             raise Exception(f'Invalid trange: ({sback}, {sfwd})')
         geocent_times = np.arange(gps_trigger - sback, gps_trigger + sfwd, 1./self._fs)

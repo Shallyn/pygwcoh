@@ -280,7 +280,7 @@ def main(argv = None):
         snr.plot(epoch = gps, fsave = fsave / f'SNR_{snr.ifo}.png', 
             pset = 'abs')
         snr.plot(epoch = gps, fsave = fsave / f'SNR_{snr.ifo}_zoom.png',
-            pset = 'abs', xrange = [gps - trange_peak[0], gps - trange_peak[1]])
+            pset = 'abs', xrange = [gps - trange_peak[0], gps + trange_peak[1]])
 
     """
     Step.3 Qscan...
