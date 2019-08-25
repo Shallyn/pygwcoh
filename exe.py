@@ -173,7 +173,7 @@ def main(argv = None):
                 Gevt = GraceSuperEvent(SGraceID = Sgraceid, verbose = True).Preferred_GraceEvent
             sngl = Gevt.get_sngl(Gevt.ifos[0])
         except:
-            logging.error('Cannot fetch GraceDB event...')
+            LOGGER.error('Cannot fetch GraceDB event...exit.\n')
             return -1
         # Setting parameters
         if m1 is None:
@@ -218,6 +218,8 @@ def main(argv = None):
     Strains.load_data(cache = cache, ifos = ifos, channel = channel)
 
     # Setting psd
+    if refpsd is None:
+        LOGGER.error('reference-psd was not specified\n')
     logging.info('Setting psd')
     psddict = get_refpsd(refpsd)
     return 0
