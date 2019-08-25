@@ -4,7 +4,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 """
 
 import numpy as np
-from .._datatypes import Detector
+from .._datatypes.detector import Detector
 from .._utils import LOGGER, interp1d_complex
 
 try:
