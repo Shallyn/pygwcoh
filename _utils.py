@@ -8,7 +8,7 @@ from pathlib import Path
 import subprocess
 from enum import Enum, auto
 import logging
-from scipy.interpolate import InterpolatedUnivariateSpline
+from scipy.interpolate import InterpolatedUnivariateSpline, interp2d
 
 #------Color Str------#
 class COLOR(object):
