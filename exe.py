@@ -242,7 +242,6 @@ def main(argv = None):
     logging.info(f'Get template, duration = {tmpl.duration}')
     track_x, track_y = tmpl.track
     trange_peak = [min(4/max(track_y), sback), min(4/max(track_y), sfwd)]
-    trange_duration = [min(tmpl.duration, sback), min(1, sfwd)]
 
     """
     Preparatory work complete
@@ -257,9 +256,6 @@ def main(argv = None):
         logging.info(f'mkdir for output prefix {fsave}')
     else:
         logging.info(f'Output prefix {fsave} exists.')
-
-    # plot setting
-    cmap = plt.get_cmap(cmaptype)
 
     """
     Step.1 Matched filtering & Skymap
@@ -284,12 +280,52 @@ def main(argv = None):
     Step.3 Qscan...
     """
     logging.info('Q matched filtering & Coherent...')
+    trange_duration = [min(tmpl.duration, sback*0.8), min(1, sfwd*0.8)]
     max_ra,max_de = skymap.max_ra_de
     SPECs, cohSPEC, nullSPEC = \
-        Strains.calc_coherent_snr_qspectrum(tmpl, q = Q, gps_trigger = gps, ra = max_ra, de =max_de, trange = trange_duration)
+        Strains.calc_coherent_snr_qspectrum(tmpl, q = Q, 
+            gps_trigger = gps, ra = max_ra, de =max_de, 
+            trange = trange_duration,
+            frange = frange)
 
     """
-    Step. Coherent Qscan
+    Step. Ploting coherent Q spectrum...
     """
+    logging.info('Ploting coherent Q spectrum...')
+    tspec_plot = np.arange(trange_duration[0], trange_duration[1], 1./fs)
+    fspec_plot = np.logspace(np.log10(frange[0]), np.log10(frange[1]), 500)
+    flabel = f'frequency [Hz]({frange})'
+    cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
+                          figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh.png',
+                          cmaptype = cmaptype, ylabel = flabel,
+                          xlim = trange_duration, ylim = frange)
+
+    cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
+                          figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_zoom.png',
+                          cmaptype = cmaptype, ylabel = flabel,
+                          xlim = trange_peak, ylim = frange)
+    
+    if nullSPEC is not None:
+        nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
+                            figsize = FIGSIZE_QSCAN, fsave = fsave/'nullQscan_coh.png',
+                            cmaptype = cmaptype, ylabel = flabel,
+                            xlim = trange_duration, ylim = frange)
+
+        nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
+                            figsize = FIGSIZE_QSCAN, fsave = fsave/'nullQscan_coh_zoom.png',
+                            cmaptype = cmaptype, ylabel = flabel,
+                            xlim = trange_peak, ylim = frange)
+    
+    for spec in SPECs:
+        spec.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
+                            figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}.png',
+                            cmaptype = cmaptype, ylabel = flabel,
+                            xlim = trange_duration, ylim = frange)
+
+        spec.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
+                            figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}_zoom.png',
+                            cmaptype = cmaptype, ylabel = flabel,
+                            xlim = trange_peak, ylim = frange)
+
 
     return 0

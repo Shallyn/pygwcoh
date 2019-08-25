@@ -6,6 +6,12 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 import numpy as np
 from .._core import resample
 from scipy.interpolate import interp1d
+from .._utils import interp2d_complex
+
+import matplotlib.pyplot as plt
+from matplotlib.colors import BoundaryNorm
+from matplotlib.ticker import MaxNLocator
+
 
 class Series(object):
     def __init__(self, value, deltax, info = 'Series'):
@@ -131,6 +137,28 @@ class TimeSeries(Series):
             return TimeSeries(new, epoch=self.epoch, fs=self.fs, info=self.info)
         else:
             return self
+
+    def plot(self, fsave,
+             xrange = None, yrange = None,
+             xlabel = None, ylabel = None,
+             figsize = None, pset = None,
+             title = None):
+        if figsize is None:
+            figsize = (10, 5)
+        if pset in (None, 'origin',):
+            val = self.value
+        if pset in ('abs', 'snr'):
+            val = np.abs(self.value)
+        if title is None:
+            title = self._info
+        plt.figure(figsize = figsize)
+        plt.plot(self.time, val)
+        plt.xlim(xrange)
+        plt.ylim(yrange)
+        plt.title(title)
+        plt.savefig(fsave, dpi = 200)
+        plt.close()
+
     
 
 class MultiSeries(object):
@@ -250,6 +278,17 @@ class TimeFreqSpectrum(MultiSeries):
     @property
     def epoch(self):
         return self._epoch
+
+    @property
+    def trange(self):
+        epoch_min = np.min(self._epoch)
+        epoch_max = np.max(self._epoch)
+        return epoch_max, epoch_min + self.length
+
+    @property
+    def times(self):
+        tstart, tend = self.trange
+        return np.arange(tstart, tend, self._deltax)
     
     @property
     def fs(self):
@@ -311,13 +350,57 @@ class TimeFreqSpectrum(MultiSeries):
             ret[i, :] = np.interp(t_interp, self.x + epoch, self._array[i,:])
         return ret
 
+    def get_finterp(self):
+        xp = self.times
+        yp = self.frequencies
+        zp = self.interpolate(xp)
+        return interp2d_complex(xp, yp, zp)
+
+    def plot_spectrum(self, times, freqs,
+                      figsize, fsave
+                      cmaptype = 'jet',
+                      xlabel = None, ylabel = None,
+                      xlim = None, ylim = None,
+                      yticks = None,
+                      title = None):
+        # plot setting
+        cmap = plt.get_cmap(cmaptype)
+        levels = MaxNLocator(nbins=pcolorbins).tick_values(coh_oscan.min(), coh_oscan.max())
+        norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+        if yticks is None
+            yticksval = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 5)
+            yticks = (yticksval, ['%.1f'%_freq for _freq in fticksval])
+        if title is None:
+            title = self._info
+
+        x = times
+        y = freqs
+        z = self.get_finterp()(x,y)
+        if xlabel is None:
+            idx_tpeak_0, idx_fpeak_0 = get_2D_argpeak(z)
+            tpeak = '%.2f'%x[idx_tpeak_0]
+            fpeak = '%.1f'%y[idx_fpeak_0]
+            snrpeak = '%.3f'%z[idx_tpeak_0, idx_fpeak_0]
+            label = f'loudest snr = {snrpeak}, at geocent gps = {tpeak}, f = {fpeak}'
 
 
+        fig = plt.figure(figsize = figsize)
+        ax = fig.add_subplot(111)
+        im = ax.pcolormesh(x, y, z, cmap = cmap, norm = norm)
+        fig.colorbar(im, ax=ax)
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.ylim(ylim)
+        plt.xlim(xlim)
+        plt.yscale('log')
+        if isinstance(yticks, tuple):
+            plt.yticks(*yticks)
+        plt.savefig(fsave ,dpi = 200)
+        plt.close()
 
-def CreateEmptySpectrum():
-    array = np.array([])
-    freqs = None
-    epoch = None
-    fs = 1
-    empty = TimeFreqSpectrum(array, epoch, fs, freqs)
-    return empty
+
+def get_2D_argpeak(matrix):
+    arg = np.where(matrix == np.max(matrix))
+    return arg[0][0], arg[1][0]
+
