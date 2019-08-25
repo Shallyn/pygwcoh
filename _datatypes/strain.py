@@ -99,7 +99,7 @@ class gwStrain(TimeSeries):
              xlabel = None, ylabel = None,
              figsize = None, pset = None,
              title = None):
-        if figsize = None:
+        if figsize is None:
             figsize = (10, 5)
         if pset in (None, 'origin',):
             val = self.value
