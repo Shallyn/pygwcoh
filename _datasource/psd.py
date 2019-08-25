@@ -10,6 +10,7 @@ from glue.ligolw import utils as ligolw_utils
 from glue.ligolw import array as ligolw_array
 from glue.ligolw import param as ligolw_param
 from scipy.interpolate import interp1d
+from pathlib import Path
 
 @ligolw_array.use_in
 @ligolw_param.use_in
