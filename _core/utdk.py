@@ -21,7 +21,7 @@ def calc_sngl_Gpc_and_shift(gwSNR, times, ra_pix, de_pix, gps_geocent):
         return calc_sngl_Gpc_and_shift_python(gwSNR, times, ra_pix, de_pix, gps_geocent)
 
 def calc_sngl_Gpc_and_shift_python(gwSNR, times, ra_pix, de_pix, gps_geocent):
-    Det = Detector(ifo)
+    Det = Detector(gwSNR.ifo)
     ntime = len(times)
     npix = len(ra_pix)
     Gpc_sngl = np.zeros([npix, 2], np.float)

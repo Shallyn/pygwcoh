@@ -83,7 +83,6 @@ class gwStrainCoherent(object):
         ndet = len(self)
 
         if trange is None:
-            print(gps_trigger - self._epoch)
             sback = min(gps_trigger - self._epoch, DEFAULT_SBACK)
             sfwd = min(self._epoch + self._duration - gps_trigger, DEFAULT_SFWD)
         elif isinstance(trange, np.float) or isinstance(trange, np.int):
