@@ -4,12 +4,17 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 """
 
 from optparse import OptionParser
+
 import numpy as np
 import time, sys, os
 import logging
 from ._coherent import gwStrainCoherent
 from ._utils import LOGGER
-from ._datasource import Template
+from ._datasource import Template, get_refpsd
+
+import matplotlib.pyplot as plt
+from matplotlib.colors import BoundaryNorm
+from matplotlib.ticker import MaxNLocator
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", 
                     datefmt="%d-%M-%Y %H:%M:%S", 
@@ -158,14 +163,18 @@ def main(argv = None):
         4. If injection was set, will make injection.
     """
     if graceid is not None or Sgraceid is not None:
-        logging.info('Fetch GraceDB id...')
+        logging.info('Fetch GraceDB event...')
         from ._datasource.gracedb import GraceEvent, GraceSuperEvent
         # Parsing GraceID
-        if graceid is not None:
-            Gevt = GraceEvent(GraceID = graceid, verbose = True)
-        else:
-            Gevt = GraceSuperEvent(SGraceID = Sgraceid, verbose = True).Preferred_GraceEvent
-        sngl = Gevt.get_sngl(Gevt.ifos[0])
+        try:
+            if graceid is not None:
+                Gevt = GraceEvent(GraceID = graceid, verbose = True)
+            else:
+                Gevt = GraceSuperEvent(SGraceID = Sgraceid, verbose = True).Preferred_GraceEvent
+            sngl = Gevt.get_sngl(Gevt.ifos[0])
+        except:
+            logging.error('Cannot fetch GraceDB event...')
+            return -1
         # Setting parameters
         if m1 is None:
             m1 = sngl.mass1
@@ -204,12 +213,53 @@ def main(argv = None):
     if ifos is None:
         ifos = ['H1', 'L1', 'V1']
 
+    # Loading data
     logging.info(f'Loading data {ifos}')
     Strains.load_data(cache = cache, ifos = ifos, channel = channel)
+
+    # Setting psd
+    logging.info('Setting psd')
+    psddict = get_refpsd(refpsd)
+    return 0
+    Strains.set_psd(psddict)
     
+    # Step.3 Making Template
     logging.info('Generating template...')
     tmpl = Template(m1 = m1, m2 = m2, s1z = s1z, s2z = s2z, 
                     fini = fini_SI, approx = approx, srate = fs, 
                     duration = 0.8 * sback)
     logging.info(f'Get template, duration = {tmpl.duration}')
+
+    """
+    Preparatory work complete
+    Now let's start data analysis.
+    """
+
+    # Step.0 Pre-setting...
+    # fsave prefix setting
+    fsave = Path(prefix)
+    if not fsave.exists():
+        fsave.mkdir(parents=True)
+
+    # plot setting
+    cmap = plt.get_cmap(cmaptype)
+
+    """
+    Step.1 Matched filtering...
+    """
+    # Call...
+    
+
+    """
+    Step.2 Skymap...
+    """
+
+    """
+    Step.3 Qscan...
+    """
+
+    """
+    Step. Coherent Qscan
+    """
+
     return 0

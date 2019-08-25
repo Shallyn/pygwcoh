@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 from enum import Enum, auto
 import logging
+from scipy.interpolate import InterpolatedUnivariateSpline
 
 #------Color Str------#
 class COLOR(object):
@@ -241,4 +242,23 @@ def myresample(t, h, fs):
     h_new[:idx_end] = h_itp(t_new[:idx_end])
     return t_new, h_new
 
+class interp1d_complex(object):
+    def __init__(self, x, y, w=None, bbox = [None]*2, k=3,ext=0, check_finite = False):
+        yreal = y.real
+        yimag = y.imag
+        self._func_real = InterpolatedUnivariateSpline(x,yreal,w=w,bbox=bbox,k=k,ext=ext,check_finite=check_finite)
+        self._func_imag = InterpolatedUnivariateSpline(x,yimag,w=w,bbox=bbox,k=k,ext=ext,check_finite=check_finite)
+
+    def __call__(self, x):
+        return self._func_real(x) + 1.j*self._func_imag(x)
+
+class interp2d_complex(object):
+    def __init__(self, x, y, z, kind = 'cubic'):
+        zreal = z.real
+        zimag = z.imag
+        self._func_real = interp2d(x,y,zreal, kind = kind)
+        self._func_imag = interp2d(x,y,zimag, kind = kind)
+    
+    def __call__(self, x, y):
+        return self._func_real(x,y) + 1.j * self._func_imag(x,y)
 

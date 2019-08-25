@@ -6,5 +6,6 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 from .filter import resample
 from .qplane import QPlane
 from . import filter
+from . import utdk
 
-__all__ = ['resample', 'QPlane', 'filter']
+__all__ = ['resample', 'QPlane', 'filter', 'utdk']

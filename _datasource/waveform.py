@@ -158,9 +158,13 @@ class Template(TimeSeries):
         time = self.time - self.time[idx_peak] + epoch_peak
         return self.time[:idx_end], self.phasedot[:idx_end] / (2*np.pi)
     
-    def iter_fftQPlane(self, q, duration, fs, frange = DEFAULT_FRANGE, mismatch = DEFAULT_MISMATCH):
+    def iter_fftQPlane(self, q, duration, fs, frange = None, mismatch = None):
         plane = QPlane(q, duration, fs, frange = frange, mismatch = mismatch)
         # For time shift
+        if frange is None:
+            frange = DEFAULT_FRANGE
+        if mismatch is None:
+            mismatch = DEFAULT_MISMATCH
         track_x, track_y = self.track
         track_x -= track_x[0]
         for qtile in plane:

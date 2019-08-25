@@ -5,6 +5,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 
 import numpy as np
 from .._core import resample
+from scipy.interpolate import interp1d
 
 class Series(object):
     def __init__(self, value, deltax, info = 'Series'):
@@ -227,6 +228,7 @@ class MultiSeries(object):
             self._y = np.array([y])
 
 
+
     
 class TimeFreqSpectrum(MultiSeries):
     def __init__(self, array, epoch, fs, freqs, info = 'TimeFreqSpectrum'):
@@ -300,6 +302,13 @@ class TimeFreqSpectrum(MultiSeries):
             self._epoch = np.array([epoch])
             self._y = np.array([freq])
             self._deltax = deltax
+
+    def interpolate(self, t_interp):
+        ret = np.zeros([self.ysize, len(t_interp)], self._array.dtype)
+        for i, epoch in enumerate(self.epoch):
+            ret[i, :] = np.interp(t_interp, self.x + epoch, self._array[i,:])
+        return ret
+
 
 
 

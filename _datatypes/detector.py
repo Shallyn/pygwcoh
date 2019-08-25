@@ -97,6 +97,12 @@ class Detector(object):
         self.location = self.frDetector.location
         self.latitude = self.frDetector.latitude
         self.longtitude = self.frDetector.longtitude
+
+    def get_at_and_delay(self, ra, de, psi, gps):
+        gmst = gmst_accurate(gps)
+        delay = self.time_delay_from_earth_center_gmst(ra, de, gmst)
+        at = self.antenna_pattern_gmst(ra, de, psi, gmst)
+        return (at, delay)
     
     def time_delay_from_earth_center(self, ra, de, gps):
         gcloc = np.array([0,0,0])
@@ -123,6 +129,32 @@ class Detector(object):
     
     def antenna_pattern(self, ra, de, psi, gps):
         gmst = gmst_accurate(gps)
+        D = self.response
+        gha = gmst - ra
+        cosgha = np.cos(gha)
+        singha = np.sin(gha)
+        cosdec = np.cos(de)
+        sindec = np.sin(de)
+        cospsi = np.cos(psi)
+        sinpsi = np.sin(psi)
+
+        x0 = -cospsi * singha - sinpsi * cosgha * sindec
+        x1 = -cospsi * cosgha + sinpsi * singha * sindec
+        x2 =  sinpsi * cosdec
+        x = np.array([x0, x1, x2])
+
+        dx = np.dot(D, x)
+
+        y0 =  sinpsi * singha - cospsi * cosgha * sindec
+        y1 =  sinpsi * cosgha + cospsi * singha * sindec
+        y2 =  cospsi * cosdec
+        y = np.array([y0, y1, y2])
+        dy = np.dot(D, y)
+        Fplus = (x * dx - y * dy).sum()
+        Fcross = (x * dy + y * dx).sum()
+        return Fplus, Fcross
+
+    def antenna_pattern_gmst(self, ra, de, psi, gmst):
         D = self.response
         gha = gmst - ra
         cosgha = np.cos(gha)

@@ -7,7 +7,6 @@ import numpy as np
 from . import TimeSeries, TimeFreqSpectrum
 from .detector import Detector
 from .._core.filter import padinsert, cutinsert, correlate_real, get_psdfun
-from .._core.qplane import DEFAULT_FRANGE, DEFAULT_MISMATCH
 from .._core import resample
 from scipy import signal
 
@@ -36,6 +35,7 @@ class gwStrain(TimeSeries):
         self._ifo_delay = Det.time_delay_from_earth_center
         self._psdfun_set = lambda x : 1
         self._sigma2 = get_sigma2(ifo)
+        self._get_at_and_delay = Det.get_at_and_delay
     
     @property
     def ifo(self):
@@ -60,6 +60,10 @@ class gwStrain(TimeSeries):
     @property
     def ifo_antenna_pattern(self):
         return self._ifo_antenna_pattern
+
+    @property
+    def ifo_get_at_and_delay(self):
+        return self._get_at_and_delay
 
     @property
     def ifo_delay(self):
@@ -91,53 +95,8 @@ class gwStrain(TimeSeries):
                        cut = None,
                        window = True,
                        psd = None):
-        if not isinstance(tmpl, Template):
-            raise TypeError(f'Incomatible type: {type(tmpl)}')
+        stilde, hrtilde, hitilde, power_vec = self.rfft_utils(tmpl, psd, cut, window)        
         shift = tmpl.dtpeak
-        h = tmpl.value
-        if len(h) > self.size:
-            s, h = cutinsert(self.value, h)
-        elif len(h) < self.size:
-            s, h = padinsert(self.value, h)
-        else:
-            s = self.value
-        if psd in ('self',):
-            psdfun = self.psdfun()
-        if psd in ('set',):
-            psdfun = self._psdfun_set
-        
-        if window:
-            try:   
-                dwindow = signal.tukey(h.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
-            except: 
-                dwindow = signal.blackman(h.size)     
-        else:
-            dwindow = 1
-            
-        fs = self.fs
-        stilde = np.fft.rfft(s * dwindow) / fs
-        hrtilde = np.fft.rfft(h.real * dwindow) / fs
-        hitilde = np.fft.rfft(h.imag * dwindow) / fs
-        datafreq = np.fft.rfftfreq(h.size, 1./fs)
-        df = abs(datafreq[1] - datafreq[0])
-
-        power_vec = psdfun(np.abs(datafreq))
-
-        if cut is not None:
-            fmin, fmax = cut
-            if fmin < min(abs(datafreq)):
-                fmin = min(abs(datafreq))
-            if fmax > max(abs(datafreq)):
-                fmax = max(abs(datafreq))
-            kmin = np.where( np.abs(datafreq - fmin) < df)[0][0]
-            kmax = np.where( np.abs(datafreq - fmax) < df)[0][0]
-            stilde[:kmin] = 0
-            stilde[kmax:] = 0
-            hrtilde[:kmin] = 0
-            hrtilde[kmax:] = 0
-            hitilde[:kmin] = 0
-            hitilde[kmax:] = 0
-
         snr_r = correlate_real(stilde, hrtilde, self.fs, power_vec)
         snr_i = correlate_real(stilde, hitilde, self.fs, power_vec)
         SNR = snr_r + 1.j*snr_i
@@ -149,54 +108,10 @@ class gwStrain(TimeSeries):
                 q,
                 psd = None,
                 cut = None,
-                frange = DEFAULT_FRANGE,
-                mismatch = DEFAULT_MISMATCH,
+                frange = None,
+                mismatch = None,
                 window = True):
-        shift = tmpl.dtpeak
-        h = tmpl.value
-        if len(h) > self.size:
-            s, h = cutinsert(self.value, h)
-        elif len(h) < self.size:
-            s, h = padinsert(self.value, h)
-        else:
-            s = self.value
-        if psd in ('self',):
-            psdfun = self.psdfun()
-        if psd in ('set',):
-            psdfun = self._psdfun_set
-        
-        if window:
-            try:   
-                dwindow = signal.tukey(h.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
-            except: 
-                dwindow = signal.blackman(h.size)     
-        else:
-            dwindow = 1
-            
-        fs = self.fs
-        stilde = np.fft.rfft(s * dwindow) / fs
-        hrtilde = np.fft.rfft(h.real * dwindow) / fs
-        hitilde = np.fft.rfft(h.imag * dwindow) / fs
-        datafreq = np.fft.rfftfreq(h.size, 1./fs)
-        df = abs(datafreq[1] - datafreq[0])
-        NFFT = stilde.size
-        power_vec = psdfun(np.abs(datafreq))
-
-        if cut is not None:
-            fmin, fmax = cut
-            if fmin < min(abs(datafreq)):
-                fmin = min(abs(datafreq))
-            if fmax > max(abs(datafreq)):
-                fmax = max(abs(datafreq))
-            kmin = np.where( np.abs(datafreq - fmin) < df)[0][0]
-            kmax = np.where( np.abs(datafreq - fmax) < df)[0][0]
-            stilde[:kmin] = 0
-            stilde[kmax:] = 0
-            hrtilde[:kmin] = 0
-            hrtilde[kmax:] = 0
-            hitilde[:kmin] = 0
-            hitilde[kmax:] = 0
-        
+        stilde, hrtilde, hitilde, power_vec = self.rfft_utils(tmpl, psd, cut, window)        
         outspec = CreateEmptySpectrum(self.ifo)
         for (shift, qtile) in tmpl.iter_fftQPlane(q = q, 
                                                   duration = self.duration,
@@ -212,20 +127,81 @@ class gwStrain(TimeSeries):
             outspec.append(snr, freq, epoch=self.epoch+shift, fs=fs)
         return outspec
 
+    def rfft_utils(self,
+                   tmpl, 
+                   psd = None,
+                   cut = None,
+                   window = True):
+        h = tmpl.value
+        if len(h) > self.size:
+            s, h = cutinsert(self.value, h)
+        elif len(h) < self.size:
+            s, h = padinsert(self.value, h)
+        else:
+            s = self.value
+        if psd in ('self',):
+            psdfun = self.psdfun()
+        if psd in ('set',):
+            psdfun = self._psdfun_set
+        
+        if window:
+            try:   
+                dwindow = signal.tukey(h.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
+            except: 
+                dwindow = signal.blackman(h.size)     
+        else:
+            dwindow = 1
+            
+        fs = self.fs
+        stilde = np.fft.rfft(s * dwindow) / fs
+        hrtilde = np.fft.rfft(h.real * dwindow) / fs
+        hitilde = np.fft.rfft(h.imag * dwindow) / fs
+        datafreq = np.fft.rfftfreq(h.size, 1./fs)
+        df = abs(datafreq[1] - datafreq[0])
+        power_vec = psdfun(np.abs(datafreq))
+
+        if cut is not None:
+            fmin, fmax = cut
+            if fmin < min(abs(datafreq)):
+                fmin = min(abs(datafreq))
+            if fmax > max(abs(datafreq)):
+                fmax = max(abs(datafreq))
+            kmin = np.where( np.abs(datafreq - fmin) < df)[0][0]
+            kmax = np.where( np.abs(datafreq - fmax) < df)[0][0]
+            stilde[:kmin] = 0
+            stilde[kmax:] = 0
+            hrtilde[:kmin] = 0
+            hrtilde[kmax:] = 0
+            hitilde[:kmin] = 0
+            hitilde[kmax:] = 0
+        
+        return stilde, hrtilde, hitilde, power_vec
+
 
 class gwStrainSpectrum(TimeFreqSpectrum):
     def __init__(self, ifo, array, epoch, fs, freqs, info = 'StrainSpectrum'):
         super(gwStrainSpectrum, self).__init__(array, epoch, fs, freqs, info)
         self._ifo = ifo
-        Det = Detector(self._ifo)
-        self._ifo_latitude = Det.latitude
-        self._ifo_longtitude = Det.longtitude
-        self._ifo_location = Det.location
-        self._ifo_response = Det.response
-        self._ifo_antenna_pattern = Det.antenna_pattern
-        self._ifo_delay = Det.time_delay_from_earth_center
-        self._psdfun_set = lambda x : 1
-        self._sigma2 = get_sigma2(ifo)
+        if self._ifo in ('H1', 'L1', 'V1'):
+            Det = Detector(self._ifo)
+            self._ifo_latitude = Det.latitude
+            self._ifo_longtitude = Det.longtitude
+            self._ifo_location = Det.location
+            self._ifo_response = Det.response
+            self._ifo_antenna_pattern = Det.antenna_pattern
+            self._ifo_delay = Det.time_delay_from_earth_center
+            self._psdfun_set = lambda x : 1
+            self._sigma2 = get_sigma2(ifo)
+        else:
+            self._ifo_latitude = None
+            self._ifo_longtitude = None
+            self._ifo_location = None
+            self._ifo_response = None
+            self._ifo_antenna_pattern = None
+            self._ifo_delay = None
+            self._psdfun_set = None
+            self._sigma2 = None
+
 
     @property
     def ifo_latitude(self):
@@ -257,6 +233,7 @@ class gwStrainSpectrum(TimeFreqSpectrum):
     @property
     def psdfun_set(self):
         return self._psdfun_set
+
         
 
 def CreateEmptySpectrum(ifo):
