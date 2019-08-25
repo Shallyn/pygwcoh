@@ -107,7 +107,7 @@ class gwStrainCoherent(object):
             Gpc_matrix[:,i,:] = Gpc_sngl * np.sqrt(gwSNR.sigma2)
             snr_matrix[:,:,i] = snr_sngl
         u,s,v = np.linalg.svd(Gpc_matrix)
-        u_matrix = np.zeros([ntime, npix, ndet, 2], u.dtype)
+        u_matrix = np.zeros([ntime, npix, ndet, ndet], u.dtype)
         u_matrix[:] = u
         ndet = u_matrix.shape[-1]
         utdk = np.zeros([ntime, npix, ndet, ndet], np.complex)
