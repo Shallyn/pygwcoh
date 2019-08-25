@@ -263,6 +263,7 @@ class MultiSeries(object):
 class TimeFreqSpectrum(MultiSeries):
     def __init__(self, array, epoch, fs, freqs, info = 'TimeFreqSpectrum'):
         super(TimeFreqSpectrum, self).__init__(array, 1./fs, freqs)
+        self._info = info
         if not self._isempty:
             if isinstance(epoch, np.int) or isinstance(epoch, np.float):
                 epoch = [epoch]
