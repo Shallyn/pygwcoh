@@ -370,7 +370,7 @@ class TimeFreqSpectrum(MultiSeries):
         cmap = plt.get_cmap(cmaptype)
         if yticks is None:
             yticksval = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 5)
-            yticks = (yticksval, ['%.1f'%_freq for _freq in fticksval])
+            yticks = (yticksval, ['%.1f'%_freq for _freq in yticksval])
         if title is None:
             title = self._info
 
