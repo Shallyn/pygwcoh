@@ -370,7 +370,7 @@ class TimeFreqSpectrum(MultiSeries):
         cmap = plt.get_cmap(cmaptype)
         levels = MaxNLocator(nbins=pcolorbins).tick_values(coh_oscan.min(), coh_oscan.max())
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
-        if yticks is None
+        if yticks is None:
             yticksval = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 5)
             yticks = (yticksval, ['%.1f'%_freq for _freq in fticksval])
         if title is None:
