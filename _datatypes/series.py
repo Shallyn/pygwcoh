@@ -359,7 +359,7 @@ class TimeFreqSpectrum(MultiSeries):
     def plot_spectrum(self, times, freqs,
                       fsave,
                       figsize = None, 
-                      cmaptype = 'jet',
+                      cmaptype = 'jet', pcolorbins = 100,
                       xlabel = None, ylabel = None,
                       xlim = None, ylim = None,
                       yticks = None,

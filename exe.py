@@ -297,34 +297,40 @@ def main(argv = None):
     flabel = f'frequency [Hz]({frange})'
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh.png',
-                          cmaptype = cmaptype, ylabel = flabel,
+                          cmaptype = cmaptype, pcolorbins = pcolorbins,
+                          ylabel = flabel,
                           xlim = trange_duration, ylim = frange)
 
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_zoom.png',
-                          cmaptype = cmaptype, ylabel = flabel,
+                          cmaptype = cmaptype, pcolorbins = pcolorbins,
+                          ylabel = flabel,
                           xlim = trange_peak, ylim = frange)
     
     if nullSPEC is not None:
         nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/'nullQscan_coh.png',
-                            cmaptype = cmaptype, ylabel = flabel,
+                            cmaptype = cmaptype, pcolorbins = pcolorbins,
+                            ylabel = flabel,
                             xlim = trange_duration, ylim = frange)
 
         nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/'nullQscan_coh_zoom.png',
-                            cmaptype = cmaptype, ylabel = flabel,
+                            cmaptype = cmaptype, pcolorbins = pcolorbins,
+                            ylabel = flabel,
                             xlim = trange_peak, ylim = frange)
     
     for spec in SPECs:
         spec.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}.png',
-                            cmaptype = cmaptype, ylabel = flabel,
+                            cmaptype = cmaptype, pcolorbins = pcolorbins,
+                            ylabel = flabel,
                             xlim = trange_duration, ylim = frange)
 
         spec.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}_zoom.png',
-                            cmaptype = cmaptype, ylabel = flabel,
+                            cmaptype = cmaptype, pcolorbins = pcolorbins,
+                            ylabel = flabel,
                             xlim = trange_peak, ylim = frange)
 
 
