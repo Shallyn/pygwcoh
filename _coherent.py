@@ -72,9 +72,9 @@ class gwStrainCoherent(object):
         return
             (SNR_ifo1, SNR_ifo2, ...), coh_SNR[trange, ra & de] 
         """
-        psd = kwargs('psd', None)
-        cut = kwargs('cut', None)
-        window = kwargs('window', True)
+        psd = kwargs.pop('psd', 'set')
+        cut = kwargs.pop('cut', None)
+        window = kwargs.pop('window', True)
         npix = nside2npix(nside)
         theta,phi = pix2ang(nside,np.arange(npix))
         ra_pix = phi-np.pi
