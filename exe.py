@@ -19,7 +19,7 @@ from matplotlib.ticker import MaxNLocator
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)s:%(message)s", 
                     datefmt="%d-%M-%Y %H:%M:%S", 
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 
 DEFAULT_NSIDE = 16
 DEFAULT_FRANGE = (20, 1200)
@@ -242,7 +242,10 @@ def main(argv = None):
     logging.info(f'Get template, duration = {tmpl.duration}')
     track_x, track_y = tmpl.track
     trange_peak = [min(4/max(track_y), sback), min(4/max(track_y), sfwd)]
+    LOGGER.info(f'trange_peak = {trange_peak}\n')
     trange_duration = [min(tmpl.duration, sback), min(1, sfwd)]
+    LOGGER.info(f'trange_dur = {trange_duration}\n')
+
     """
     Preparatory work complete
     Now let's start data analysis.
