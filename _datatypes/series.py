@@ -444,7 +444,7 @@ class TimeFreqSpectrum(MultiSeries):
             track_val[np.arange(len(track_x)), np.arange(len(track_y))] / len(track_val)
         significance = np.sum(integrate) / np.median(z)
         if xlabel is None:
-            xlabel = f'track integration = {integ}'
+            xlabel = f'track significance = {significance}'
 
         levels = MaxNLocator(nbins=pcolorbins).tick_values(z.min(), z.max())
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
