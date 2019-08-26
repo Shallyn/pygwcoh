@@ -100,8 +100,8 @@ class gwStrain(TimeSeries):
                        psd = None):
         stilde, hrtilde, hitilde, power_vec = self.rfft_utils(tmpl, psd, cut, window)        
         shift = tmpl.dtpeak
-        snr_r = correlate_real(stilde, hrtilde, self.fs, power_vec)
-        snr_i = correlate_real(stilde, hitilde, self.fs, power_vec)
+        snr_r = correlate_real(stilde, hrtilde, self.fs, power_vec, self.size)
+        snr_i = correlate_real(stilde, hitilde, self.fs, power_vec, self.size)
         SNR = snr_r + 1.j*snr_i
         return gwStrain(SNR, self.epoch + shift, self.ifo, self.fs, info = f'{self.ifo}_SNR')
 
@@ -124,8 +124,8 @@ class gwStrain(TimeSeries):
             qwindow = qtile.get_window()
             hrwindowed = hrtilde * qwindow
             hiwindowed = hitilde * qwindow
-            snr_r = correlate_real(stilde, hrwindowed, fs, power_vec)
-            snr_i = correlate_real(stilde, hiwindowed, fs, power_vec)
+            snr_r = correlate_real(stilde, hrwindowed, fs, power_vec, self.size)
+            snr_i = correlate_real(stilde, hiwindowed, fs, power_vec, self.size)
             snr = snr_r + 1.j*snr_i
             outspec.append(snr, freq, epoch=self.epoch+shift, fs=fs)
         return outspec
