@@ -293,45 +293,47 @@ def main(argv = None):
     """
     logging.info('Ploting coherent Q spectrum...')
     tspec_plot = np.arange(gps - trange_duration[0], gps + trange_duration[1], 1./fs)
+    tdur_range_plot = [tspec_plot[0], tspec_plot[-1]]
+    tpeak_range_plot = [gps - trange_peak[0], gps + trange_peak[1]]
     fspec_plot = np.logspace(np.log10(frange[0]), np.log10(frange[1]), 500)
     flabel = f'frequency [Hz]({frange})'
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh.png',
                           cmaptype = cmaptype, pcolorbins = pcolorbins,
                           ylabel = flabel,
-                          xlim = trange_duration, ylim = frange)
+                          xlim = trange_plot, ylim = frange)
 
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_zoom.png',
                           cmaptype = cmaptype, pcolorbins = pcolorbins,
                           ylabel = flabel,
-                          xlim = trange_peak, ylim = frange)
+                          xlim = tpeak_range_plot, ylim = frange)
     
     if nullSPEC is not None:
         nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/'nullQscan_coh.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel,
-                            xlim = trange_duration, ylim = frange)
+                            xlim = tdur_range_plot, ylim = frange)
 
         nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/'nullQscan_coh_zoom.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel,
-                            xlim = trange_peak, ylim = frange)
+                            xlim = tpeak_range_plot, ylim = frange)
     
     for spec in SPECs:
         spec.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel,
-                            xlim = trange_duration, ylim = frange)
+                            xlim = tdur_range_plot, ylim = frange)
 
         spec.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}_zoom.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel,
-                            xlim = trange_peak, ylim = frange)
+                            xlim = tpeak_range_plot, ylim = frange)
 
 
     return 0
