@@ -464,6 +464,7 @@ class TimeFreqSpectrum(MultiSeries):
             plt.yticks(*yticks)
         plt.savefig(fsave ,dpi = 200)
         plt.close()
+        return significance
 
 
     def calc_integrate_track(self, track_x, track_y,
