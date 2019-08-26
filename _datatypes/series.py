@@ -419,7 +419,6 @@ class TimeFreqSpectrum(MultiSeries):
                                  title = None):
         # Track
         track_x, track_y = tmpl.get_track(gps_trigger)
-        integ = self.calc_integrate_track(track_x, track_y)
         
         # plot setting
         if figsize is None:
@@ -437,7 +436,14 @@ class TimeFreqSpectrum(MultiSeries):
 
         x = np.arange(xlim[0], xlim[1], self._deltax)
         y = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 500)
-        z = self.get_finterp(pset = 'abs')(x,y)
+        func = self.get_finterp(pset = 'abs')
+        z = func(x,y)
+        track_val = func(track_x, track_y)
+        integrate = \
+            track_val[np.arange(len(track_x)), np.arange(len(track_y))] * \
+                np.gradient(track_x) * \
+                    np.gradient(track_y)
+        integ = np.sum(integrate)
         if xlabel is None:
             xlabel = f'track integration = {integ}'
 
