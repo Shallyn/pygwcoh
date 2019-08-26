@@ -383,11 +383,6 @@ class TimeFreqSpectrum(MultiSeries):
         x = times
         y = freqs
         z = self.get_finterp(pset = 'abs')(x,y)
-        #print(self._epoch - self._epoch[0])
-        print(self._info)
-        print(self.trange[1] - self.trange[0])
-        print( (self.trange[1] - self.trange[0]) / self._deltax )
-        print(self._deltax)
         if xlabel is None:
             idx_tpeak_0, idx_fpeak_0 = get_2D_argpeak(z)
             tpeak = '%.2f'%x[idx_tpeak_0]
