@@ -442,7 +442,7 @@ class TimeFreqSpectrum(MultiSeries):
         tmp = track_val[np.arange(len(track_x)), np.arange(len(track_y))]
         integrate = \
             track_val[np.arange(len(track_x)), np.arange(len(track_y))] / len(track_val)
-        integ = np.sum(integrate)
+        significance = np.sum(integrate) / np.median(z)
         if xlabel is None:
             xlabel = f'track integration = {integ}'
 
