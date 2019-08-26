@@ -372,8 +372,9 @@ class TimeFreqSpectrum(MultiSeries):
                       yticks = None,
                       title = None):
         # plot setting
-        print(self._y)
-        print(self._epoch)
+        plt.plot(self.times, self._array[0,:])
+        plt.savefig(fsave / 'test.png', dpi = 200)
+        plt.close()
         if figsize is None:
             figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)

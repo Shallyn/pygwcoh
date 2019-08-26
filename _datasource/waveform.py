@@ -169,6 +169,9 @@ class Template(TimeSeries):
         track_x -= track_x[0]
         for qtile in plane:
             freq = qtile.frequency
-            idx = np.where(np.abs(track_y - freq) == np.min(np.abs(track_y - freq)))[0][0]
-            shift = track_x[idx]
+            if freq <= min(track_y):
+                shift = 0
+            else:
+                idx = np.where(np.abs(track_y - freq) == np.min(np.abs(track_y - freq)))[0][0]
+                shift = track_x[idx]
             yield (shift, qtile)
