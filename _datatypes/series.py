@@ -392,7 +392,7 @@ class TimeFreqSpectrum(MultiSeries):
             tpeak = '%.2f'%x[idx_tpeak_0]
             fpeak = '%.1f'%y[idx_fpeak_0]
             snrpeak = '%.3f'%z[idx_tpeak_0, idx_fpeak_0]
-            label = f'loudest snr = {snrpeak}, at geocent gps = {tpeak}, f = {fpeak}'
+            xlabel = f'loudest snr = {snrpeak}, at geocent gps = {tpeak}, f = {fpeak}'
 
         levels = MaxNLocator(nbins=pcolorbins).tick_values(z.min(), z.max())
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)

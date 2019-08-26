@@ -292,7 +292,7 @@ def main(argv = None):
     Step. Ploting coherent Q spectrum...
     """
     logging.info('Ploting coherent Q spectrum...')
-    tspec_plot = np.arange(trange_duration[0], trange_duration[1], 1./fs)
+    tspec_plot = np.arange(gps - trange_duration[0], gps + trange_duration[1], 1./fs)
     fspec_plot = np.logspace(np.log10(frange[0]), np.log10(frange[1]), 500)
     flabel = f'frequency [Hz]({frange})'
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
