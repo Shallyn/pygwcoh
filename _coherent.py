@@ -159,10 +159,11 @@ class gwStrainCoherent(object):
             for i, strain in enumerate(self):
                 stilde, hrtilde, hitilde, power_vec = \
                     strain.rfft_utils(tmpl, psd, cut, window)
+                df = self._fs / strain.size
                 hrwindowed = hrtilde * qwindow
                 hiwindowed = hitilde * qwindow
-                snr_r = correlate_real(stilde, hrwindowed, self._fs, power_vec, strain.size)
-                snr_i = correlate_real(stilde, hiwindowed, self._fs, power_vec, strain.size)
+                snr_r = correlate_real(stilde, hrwindowed, power_vec, df)
+                snr_i = correlate_real(stilde, hiwindowed, power_vec, df)
                 snr = snr_r + 1.j*snr_i
                 retSPEC[i].append(snr, freq, epoch=strain.epoch+shift, fs=self._fs)
         frequencies = np.asarray(frequencies)

@@ -100,8 +100,9 @@ class gwStrain(TimeSeries):
                        psd = None):
         stilde, hrtilde, hitilde, power_vec = self.rfft_utils(tmpl, psd, cut, window)        
         shift = tmpl.dtpeak
-        snr_r = correlate_real(stilde, hrtilde, self.fs, power_vec, self.size)
-        snr_i = correlate_real(stilde, hitilde, self.fs, power_vec, self.size)
+        df = self.fs / self.size
+        snr_r = correlate_real(stilde, hrtilde, power_vec, df)
+        snr_i = correlate_real(stilde, hitilde, power_vec, df)
         SNR = snr_r + 1.j*snr_i
         return gwStrain(SNR, self.epoch + shift, self.ifo, self.fs, info = f'{self.ifo}_SNR')
 
@@ -116,18 +117,19 @@ class gwStrain(TimeSeries):
                 window = True):
         stilde, hrtilde, hitilde, power_vec = self.rfft_utils(tmpl, psd, cut, window)        
         outspec = CreateEmptySpectrum(self.ifo)
+        df = self.fs / self.size
         for (shift, qtile) in tmpl.iter_fftQPlane(q = q, 
                                                   duration = self.duration,
-                                                  fs = fs,
+                                                  fs = self.fs,
                                                   frange = frange,
                                                   mismatch = mismatch):
             qwindow = qtile.get_window()
             hrwindowed = hrtilde * qwindow
             hiwindowed = hitilde * qwindow
-            snr_r = correlate_real(stilde, hrwindowed, fs, power_vec, self.size)
-            snr_i = correlate_real(stilde, hiwindowed, fs, power_vec, self.size)
+            snr_r = correlate_real(stilde, hrwindowed, power_vec, df)
+            snr_i = correlate_real(stilde, hiwindowed, power_vec, df)
             snr = snr_r + 1.j*snr_i
-            outspec.append(snr, freq, epoch=self.epoch+shift, fs=fs)
+            outspec.append(snr, freq, epoch=self.epoch+shift, fs=self.fs)
         return outspec
 
     def rfft_utils(self,
@@ -156,9 +158,9 @@ class gwStrain(TimeSeries):
             dwindow = 1
             
         fs = self.fs
-        stilde = np.fft.rfft(s * dwindow) / fs
-        hrtilde = np.fft.rfft(h.real * dwindow) / fs
-        hitilde = np.fft.rfft(h.imag * dwindow) / fs
+        stilde = np.fft.rfft(s * dwindow)
+        hrtilde = np.fft.rfft(h.real * dwindow)
+        hitilde = np.fft.rfft(h.imag * dwindow)
         datafreq = np.fft.rfftfreq(h.size, 1./fs)
         df = abs(datafreq[1] - datafreq[0])
         power_vec = psdfun(np.abs(datafreq))
