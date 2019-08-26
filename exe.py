@@ -308,6 +308,11 @@ def main(argv = None):
                           cmaptype = cmaptype, pcolorbins = pcolorbins,
                           ylabel = flabel,
                           xlim = tpeak_range_plot, ylim = frange)
+
+    cohSPEC.plot_spectrum_with_track(tmpl, gps, fsave, 
+                          figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_track.png',
+                          cmaptype = cmaptype, pcolorbins = pcolorbins,
+                          ylabel = flabel)
     
     if nullSPEC is not None:
         nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
@@ -334,4 +339,10 @@ def main(argv = None):
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel,
                             xlim = tpeak_range_plot, ylim = frange)
+        delay = spec.ifo_delay(max_ra, max_de, gps)
+        spec.plot_spectrum_with_track(tmpl, gps + delay, fsave, 
+                            figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_track.png',
+                            cmaptype = cmaptype, pcolorbins = pcolorbins,
+                            ylabel = flabel)
+
     return 0

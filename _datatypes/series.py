@@ -374,6 +374,8 @@ class TimeFreqSpectrum(MultiSeries):
         if figsize is None:
             figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)
+        if ylim is None:
+            ylim = [self.frequencies[0], self.frequencies[-1]]
         if yticks is None:
             yticksval = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 5)
             yticks = (yticksval, ['%.1f'%_freq for _freq in yticksval])
@@ -408,6 +410,76 @@ class TimeFreqSpectrum(MultiSeries):
         plt.savefig(fsave ,dpi = 200)
         plt.close()
 
+    def plot_spectrum_with_track(self,
+                                 tmpl, gps_trigger, fsave,
+                                 figsize = None, 
+                                 cmaptype = 'jet', pcolorbins = 100,
+                                 xlabel = None, ylabel = None,
+                                 yticks = None,
+                                 title = None):
+        # Track
+        track_x, track_y = get_track(gps_trigger)
+        integ = self.calc_integrate_track(track_x, track_y)
+        
+        # plot setting
+        if figsize is None:
+            figsize = (12, 7)
+        cmap = plt.get_cmap(cmaptype)
+        ylim = (self.frequencies[0], self.frequencies[-1])
+        xlim = (max(track_x[0] - 0.5, self.trange[0]), min(track_x[1] + 0.5, self.trange[1]))
+        
+        if yticks is None:
+            yticksval = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 5)
+            yticks = (yticksval, ['%.1f'%_freq for _freq in yticksval])
+        
+        if title is None:
+            title = self._info
+
+        x = np.arange(xlim[0], xlim[1], self._deltax)
+        y = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 500)
+        z = self.get_finterp(pset = 'abs')(x,y)
+        if xlabel is None:
+            xlabel = f'track integration = {integ}'
+
+        levels = MaxNLocator(nbins=pcolorbins).tick_values(z.min(), z.max())
+        norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+
+        fig = plt.figure(figsize = figsize)
+        ax = fig.add_subplot(111)
+        im = ax.pcolormesh(x, y, z, cmap = cmap, norm = norm)
+        fig.colorbar(im, ax=ax)
+        plt.plot(track_x, track_y, '-', color='#ba7b00', zorder=3, lw=1.5)
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.ylim(ylim)
+        plt.xlim(xlim)
+        plt.yscale('log')
+        if isinstance(yticks, tuple):
+            plt.yticks(*yticks)
+        plt.savefig(fsave ,dpi = 200)
+        plt.close()
+
+
+    def calc_integrate_track(self, track_x, track_y,
+                    dt_idx = 46):
+        dt_idx = int(dt_idx)
+        integ = np.zeros(len(self.frequencies))
+        freqgrad = np.gradient(self.frequencies)
+        time_split = np.zeros(len(self.frequencies))
+        for i, freq in enumerate(self.frequencies):
+            deltafreq = track_y - freq
+            idx = np.where( np.abs(deltafreq) == np.min(np.abs(deltafreq)) )[0][0]
+            gps = track_x[idx]
+            deltatime = self.x + self.epoch[i] - gps
+            dtrange = dt_idx / freq
+            idx_time_start = np.where( np.abs(deltatime) < dtrange )[0][0]
+            idx_time_end = idx_time_start + int(dtrange / self._deltax)
+            integ[i] = np.max(self._array[i, idx_time_start:idx_time_end])
+            time_split[i] = gps
+        ret = np.sum(integ * np.gradient(time_split) * freqgrad)
+        return ret / (time_split[-1] - time_split[0]) / (self.frequencies[-1] - self.frequencies[0])
+        
 
 def get_2D_argpeak(matrix):
     arg = np.where(matrix == np.max(matrix))
