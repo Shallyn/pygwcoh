@@ -442,7 +442,7 @@ class TimeFreqSpectrum(MultiSeries):
         tmp = track_val[np.arange(len(track_x)), np.arange(len(track_y))]
         integrate = \
             track_val[np.arange(len(track_x)), np.arange(len(track_y))] * \
-                np.gradient(track_x) ／ (track_x[-1] - track_x[0]) * \
+                np.gradient(track_x) / (track_x[-1] - track_x[0]) * \
                     np.gradient(track_y) / (track_y[-1] - track_y[0])
         integ = np.sum(integrate)
         if xlabel is None:
