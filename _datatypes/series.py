@@ -418,7 +418,7 @@ class TimeFreqSpectrum(MultiSeries):
                                  yticks = None,
                                  title = None):
         # Track
-        track_x, track_y = get_track(gps_trigger)
+        track_x, track_y = tmpl.get_track(gps_trigger)
         integ = self.calc_integrate_track(track_x, track_y)
         
         # plot setting
