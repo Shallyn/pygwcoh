@@ -462,7 +462,7 @@ class TimeFreqSpectrum(MultiSeries):
 
 
     def calc_integrate_track(self, track_x, track_y,
-                    dt_idx = 46):
+                    dt_idx = 10):
         dt_idx = int(dt_idx)
         integ = np.zeros(len(self.frequencies))
         freqgrad = np.gradient(self.frequencies)
@@ -473,6 +473,7 @@ class TimeFreqSpectrum(MultiSeries):
             gps = track_x[idx]
             deltatime = self.x + self.epoch[i] - gps
             dtrange = dt_idx / freq
+            print( np.min(np.abs(deltatime)))
             print(dtrange)
             idx_times = np.where( np.abs(deltatime) < dtrange )[0]
             integ[i] = np.max(self._array[i, idx_times])
