@@ -241,7 +241,7 @@ def main(argv = None):
                     duration = 0.8 * sback)
     logging.info(f'Get template, duration = {tmpl.duration}')
     track_x, track_y = tmpl.track
-    trange_peak = [min(4/max(track_y), sback), min(4/max(track_y), sfwd)]
+    trange_peak = [min(8/max(track_y), sback), min(8/max(track_y), sfwd)]
 
     """
     Preparatory work complete
@@ -280,7 +280,7 @@ def main(argv = None):
     Step.3 Qscan...
     """
     logging.info('Q matched filtering & Coherent...')
-    trange_duration = [min(tmpl.duration*1.2, trange_peak[0], sback*0.8), min(1, sfwd*0.8)]
+    trange_duration = [min(max(tmpl.duration*1.2, trange_peak[0]), sback*0.8), min(1, sfwd*0.8)]
     max_ra,max_de = skymap.max_ra_de
     SPECs, cohSPEC, nullSPEC = \
         Strains.calc_coherent_snr_qspectrum(tmpl, q = Q, 
@@ -296,7 +296,7 @@ def main(argv = None):
     tdur_range_plot = [tspec_plot[0], tspec_plot[-1]]
     tpeak_range_plot = [gps - trange_peak[0], gps + trange_peak[1]]
     fspec_plot = np.logspace(np.log10(frange[0]), np.log10(frange[1]), 500)
-    flabel = f'frequency [Hz]({frange})'
+    flabel = f'frequency [Hz]{frange}'
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh.png',
                           cmaptype = cmaptype, pcolorbins = pcolorbins,
@@ -334,6 +334,4 @@ def main(argv = None):
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel,
                             xlim = tpeak_range_plot, ylim = frange)
-
-
     return 0
