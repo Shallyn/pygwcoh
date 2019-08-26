@@ -415,5 +415,5 @@ class TimeFreqSpectrum(MultiSeries):
 
 def get_2D_argpeak(matrix):
     arg = np.where(matrix == np.max(matrix))
-    return arg[0][0], arg[1][0]
+    return arg[1][0], arg[0][0]
 
