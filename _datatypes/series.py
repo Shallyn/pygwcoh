@@ -387,7 +387,7 @@ class TimeFreqSpectrum(MultiSeries):
         x = times
         y = freqs
         z = self.get_finterp(pset = 'abs')(x,y)
-        print(np.gradient(z[int(y.size/2),:]))
+        #print(np.gradient(z[int(y.size/2),:]))
         if xlabel is None:
             idx_tpeak_0, idx_fpeak_0 = get_2D_argpeak(z)
             tpeak = '%.2f'%x[idx_tpeak_0]
