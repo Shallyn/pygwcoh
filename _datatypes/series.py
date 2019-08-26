@@ -372,9 +372,7 @@ class TimeFreqSpectrum(MultiSeries):
                       yticks = None,
                       title = None):
         # plot setting
-        plt.plot(self.times, np.abs(self._array[0,:]))
-        plt.savefig(f'/home/xiaolin.liu/public_html/qscan_test/{self._info}_test.png', dpi = 200)
-        plt.close()
+        print(np.gradient(self.epoch))
         if figsize is None:
             figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)
