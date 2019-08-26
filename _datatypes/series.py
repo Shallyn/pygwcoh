@@ -344,6 +344,7 @@ class TimeFreqSpectrum(MultiSeries):
             self._epoch = np.array([epoch])
             self._y = np.array([freq])
             self._deltax = deltax
+            self._isempty = False
 
     def interpolate(self, t_interp):
         ret = np.zeros([self.ysize, len(t_interp)], self._array.dtype)
