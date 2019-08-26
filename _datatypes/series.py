@@ -356,9 +356,9 @@ class TimeFreqSpectrum(MultiSeries):
         xp = self.times
         yp = self.frequencies
         zp = self.interpolate(xp)
-        print(np.gradient(zp[int(yp.size/2),:]))
         if pset in ('abs',):
             zp = np.abs(zp)
+        print(np.gradient(zp[int(yp.size/2),:]))
         if zp.dtype == complex:
             return interp2d_complex(xp, yp, zp)
         else:
