@@ -309,7 +309,7 @@ def main(argv = None):
                           ylabel = flabel,
                           xlim = tpeak_range_plot, ylim = frange)
 
-    cohSPEC.plot_spectrum_with_track(tmpl, gps, fsave, 
+    cohSPEC.plot_spectrum_with_track(tmpl, gps, 
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_track.png',
                           cmaptype = cmaptype, pcolorbins = pcolorbins,
                           ylabel = flabel)
@@ -340,7 +340,7 @@ def main(argv = None):
                             ylabel = flabel,
                             xlim = tpeak_range_plot, ylim = frange)
         delay = spec.ifo_delay(max_ra, max_de, gps)
-        spec.plot_spectrum_with_track(tmpl, gps + delay, fsave, 
+        spec.plot_spectrum_with_track(tmpl, gps + delay, 
                             figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_track.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel)
