@@ -310,7 +310,7 @@ class TimeFreqSpectrum(MultiSeries):
             if fs is None:
                 deltax = self.deltax
             else:
-                deltax = fs
+                deltax = 1./fs
             size = value.size
         else:
             value = timeseries.value
