@@ -372,6 +372,7 @@ class TimeFreqSpectrum(MultiSeries):
                       yticks = None,
                       title = None):
         # plot setting
+        print(xlim)
         if figsize is None:
             figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)
