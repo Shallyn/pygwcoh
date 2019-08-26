@@ -282,8 +282,8 @@ class TimeFreqSpectrum(MultiSeries):
 
     @property
     def trange(self):
-        epoch_min = np.min(self._epoch)
-        epoch_max = np.max(self._epoch)
+        epoch_min = min(self.epoch)
+        epoch_max = max(self.epoch)
         return epoch_max, epoch_min + self.length
 
     @property
