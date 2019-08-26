@@ -467,15 +467,12 @@ class TimeFreqSpectrum(MultiSeries):
         integ = np.zeros(len(self.frequencies))
         freqgrad = np.gradient(self.frequencies)
         time_split = np.zeros(len(self.frequencies))
-        print(track_x[0])
         for i, freq in enumerate(self.frequencies):
             deltafreq = track_y - freq
             idx = np.where( np.abs(deltafreq) == np.min(np.abs(deltafreq)) )[0][0]
             gps = track_x[idx]
             deltatime = self.x + self.epoch[i] - gps
             dtrange = dt_idx / freq
-            print( np.min(np.abs(deltatime)))
-            print(dtrange)
             idx_times = np.where( np.abs(deltatime) < dtrange )[0]
             integ[i] = np.max(self._array[i, idx_times])
             time_split[i] = gps

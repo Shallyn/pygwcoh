@@ -156,7 +156,7 @@ class Template(TimeSeries):
         idx_peak = self.argpeak
         idx_end = min(len(self), idx_peak + extra_index)
         time = self.time - self.time[idx_peak] + epoch_peak
-        return time[:idx_end], self.phasedot[:idx_end] / (2*np.pi)
+        return time[:idx_end], self.phasedot[:idx_end] / (np.pi)
     
     def iter_fftQPlane(self, q, duration, fs, frange = None, mismatch = None):
         if frange is None:
