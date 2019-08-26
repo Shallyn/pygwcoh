@@ -440,7 +440,7 @@ class TimeFreqSpectrum(MultiSeries):
         z = func(x,y)
         track_val = func(track_x, track_y)
         tmp = track_val[np.arange(len(track_x)), np.arange(len(track_y))]
-        print(tmp.shape)
+        print(np.max(tmp))
         integrate = \
             track_val[np.arange(len(track_x)), np.arange(len(track_y))] * \
                 np.gradient(track_x) * \
