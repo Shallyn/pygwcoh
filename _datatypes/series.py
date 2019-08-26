@@ -356,9 +356,6 @@ class TimeFreqSpectrum(MultiSeries):
         xp = self.times
         yp = self.frequencies
         zp = self.interpolate(xp)
-        print(zp.shape)
-        print(xp)
-        print(yp)
         if pset in ('abs',):
             zp = np.abs(zp)
         if zp.dtype == complex:
@@ -391,7 +388,7 @@ class TimeFreqSpectrum(MultiSeries):
             idx_tpeak_0, idx_fpeak_0 = get_2D_argpeak(z)
             tpeak = '%.2f'%x[idx_tpeak_0]
             fpeak = '%.1f'%y[idx_fpeak_0]
-            snrpeak = '%.3f'%z[idx_tpeak_0, idx_fpeak_0]
+            snrpeak = '%.3f'%z[idx_fpeak_0, idx_tpeak_0]
             xlabel = f'loudest snr = {snrpeak}, at geocent gps = {tpeak}, f = {fpeak}'
 
         levels = MaxNLocator(nbins=pcolorbins).tick_values(z.min(), z.max())
