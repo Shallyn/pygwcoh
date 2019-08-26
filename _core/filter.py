@@ -65,7 +65,7 @@ def cutinsert(a,b,cutpct = None):
     return padinsert(a, b_cut)        
 
 def correlate_real(stilde, htilde, power_vec, df):
-    sigmasq = 2 * (htilde * htilde.conjugate() / power_vec).sum() * df
-    corr = 2 * stilde * htilde.conjugate() / power_vec
+    sigmasq = 1 * (htilde * htilde.conjugate() / power_vec).sum() * df
+    corr = 1 * stilde * htilde.conjugate() / power_vec
     corr_time = np.fft.irfft(corr) / np.sqrt(np.abs(sigmasq))
     return corr_time
