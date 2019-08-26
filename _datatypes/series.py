@@ -288,8 +288,7 @@ class TimeFreqSpectrum(MultiSeries):
 
     @property
     def times(self):
-        tstart, tend = self.trange
-        return np.arange(tstart, tend, self._deltax)
+        return np.arange(self.trange[0], self.trange[1], self._deltax)
     
     @property
     def fs(self):
@@ -386,6 +385,7 @@ class TimeFreqSpectrum(MultiSeries):
         z = self.get_finterp(pset = 'abs')(x,y)
         #print(self._epoch - self._epoch[0])
         print(self.trange[1] - self.trange[0])
+        print( (self.trange[1] - self.trange[0]) / self._deltax )
         print(self.length)
         if xlabel is None:
             idx_tpeak_0, idx_fpeak_0 = get_2D_argpeak(z)
