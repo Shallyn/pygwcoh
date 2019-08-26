@@ -349,7 +349,10 @@ class TimeFreqSpectrum(MultiSeries):
     def interpolate(self, t_interp):
         ret = np.zeros([self.ysize, len(t_interp)], self._array.dtype)
         for i, epoch in enumerate(self.epoch):
-            ret[i, :] = np.interp(t_interp, self.x + epoch, self._array[i,:])
+            tgt = self._array[i,:]
+            print(np.gradient(tgt))
+            tmp = np.interp(t_interp, self.x + epoch, tgt)
+            print(np.gradient(tmp))
         return ret
 
     def get_finterp(self, pset = None):
