@@ -384,6 +384,7 @@ class TimeFreqSpectrum(MultiSeries):
         x = times
         y = freqs
         z = self.get_finterp(pset = 'abs')(x,y)
+        print(self._epoch - self._epoch[0])
         print(self.xsize)
         print(len(self.times))
         if xlabel is None:
