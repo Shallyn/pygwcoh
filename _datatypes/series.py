@@ -439,6 +439,8 @@ class TimeFreqSpectrum(MultiSeries):
         func = self.get_finterp(pset = 'abs')
         z = func(x,y)
         track_val = func(track_x, track_y)
+        tmp = track_val[np.arange(len(track_x)), np.arange(len(track_y))]
+        print(tmp.shape)
         integrate = \
             track_val[np.arange(len(track_x)), np.arange(len(track_y))] * \
                 np.gradient(track_x) * \
