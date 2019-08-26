@@ -358,7 +358,6 @@ class TimeFreqSpectrum(MultiSeries):
         zp = self.interpolate(xp)
         if pset in ('abs',):
             zp = np.abs(zp)
-        print(np.gradient(zp[int(yp.size/2),:]))
         if zp.dtype == complex:
             return interp2d_complex(xp, yp, zp)
         else:
@@ -385,9 +384,8 @@ class TimeFreqSpectrum(MultiSeries):
         x = times
         y = freqs
         z = self.get_finterp(pset = 'abs')(x,y)
-        yminmin = np.min(np.abs(self.frequencies - self.frequencies[int(self.ysize/2)]))
-        idx = np.where( np.abs(self.frequencies - self.frequencies[int(self.ysize/2)]) == yminmin)[0][0]
-        print(np.gradient(z[idx,:]))
+        print(len(self.length))
+        print(len(self.times))
         if xlabel is None:
             idx_tpeak_0, idx_fpeak_0 = get_2D_argpeak(z)
             tpeak = '%.2f'%x[idx_tpeak_0]
