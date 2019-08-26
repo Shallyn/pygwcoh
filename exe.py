@@ -301,7 +301,7 @@ def main(argv = None):
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh.png',
                           cmaptype = cmaptype, pcolorbins = pcolorbins,
                           ylabel = flabel,
-                          xlim = trange_plot, ylim = frange)
+                          xlim = tdur_range_plot, ylim = frange)
 
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_zoom.png',
