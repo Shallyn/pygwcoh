@@ -372,7 +372,7 @@ class TimeFreqSpectrum(MultiSeries):
                       yticks = None,
                       title = None):
         # plot setting
-        print(np.gradient(self._array[:,int(self.xsize/2)]))
+        print(np.gradient(self._array[int(self.ysize/2),:]))
         if figsize is None:
             figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)
