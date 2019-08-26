@@ -35,7 +35,7 @@ class Skymap(object):
         max_de,max_ra = pix2ang(self._nside,np.argmax(self._coh_snr_pix))
         max_de = max_de[0]
         max_ra = max_ra[0]
-        return max_ra, max_de
+        return max_ra - np.pi, np.pi/2 - max_de
 
 
     @property
@@ -49,7 +49,7 @@ class Skymap(object):
         prefix = Path(prefix)
         if plot_peak:
             max_ra,max_de = self.max_ra_de
-            x1,y1 = self._projector.ang2xy(np.array([max_de, max_ra]))
+            x1,y1 = self._projector.ang2xy(np.array([np.pi/2 - max_de, max_ra + np.pi]))
         mollview(self._coh_snr_pix,title=f'Coherent SNR, max = ({max_ra},{max_de})')
         graticule(coord='G',local=True)
         if plot_peak:

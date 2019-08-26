@@ -284,7 +284,7 @@ def main(argv = None):
     max_ra,max_de = skymap.max_ra_de
     SPECs, cohSPEC, nullSPEC = \
         Strains.calc_coherent_snr_qspectrum(tmpl, q = Q, 
-            gps_trigger = gps, ra = max_ra, de =max_de, 
+            gps_trigger = gps, ra = max_ra, de = max_de, 
             trange = trange_duration,
             frange = frange)
 
