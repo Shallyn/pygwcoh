@@ -372,7 +372,7 @@ class TimeFreqSpectrum(MultiSeries):
                       yticks = None,
                       title = None):
         # plot setting
-        plt.plot(self.times, self._array[0,:])
+        plt.plot(self.times, np.abs(self._array[0,:]))
         plt.savefig(f'/home/xiaolin.liu/public_html/qscan_test/{self._info}_test.png', dpi = 200)
         plt.close()
         if figsize is None:
