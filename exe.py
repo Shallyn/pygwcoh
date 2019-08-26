@@ -263,7 +263,7 @@ def main(argv = None):
     # Call...
     logging.info('Matched filtering & Coherent...')
     SNRs, skymap = \
-        Strains.calc_coherent_snr_skymap(tmpl, nside, gps)
+        Strains.calc_coherent_snr_skymap(tmpl, nside, gps, cut = [20, 1200])
 
     """
     Step.2 Plot SNR & Skymap...
