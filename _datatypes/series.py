@@ -443,7 +443,7 @@ class TimeFreqSpectrum(MultiSeries):
         z = func(x,y)
         track_spec = func(track_x, track_y)
         track_trace = \
-            track_spec[np.arange(len(track_x)), np.arange(len(track_y))] / len(track_val)
+            track_spec[np.arange(len(track_x)), np.arange(len(track_y))] / len(track_x)
         significance = np.sum(track_trace) / np.median(z)
         track_back_spec = func(self.times, track_y)
         track_back = np.zeros(len(track_y))
