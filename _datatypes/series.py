@@ -456,11 +456,11 @@ class TimeFreqSpectrum(MultiSeries):
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
 
         fig = plt.figure(figsize = figsize)
-        gs = gridspec.GridSpec(4, 1)
+        gs = gridspec.GridSpec(5, 1)
         gs.update(left=0.05, right=0.95, wspace=0.02)
         plt.title(title)
         ax1 = plt.subplot(gs[:3,0])
-        ax2 = plt.subplot(gs[3,0])
+        ax2 = plt.subplot(gs[4,0])
         im = ax1.pcolormesh(x, y, z, cmap = cmap, norm = norm)
         fig.colorbar(im, ax=ax1)
         ax1.plot(track_x, track_y, '-', color='#ba7b00', zorder=3, lw=1.5)
@@ -469,6 +469,8 @@ class TimeFreqSpectrum(MultiSeries):
         ax1.set_ylim(ylim)
         ax1.set_xlim(xlim)
         ax1.set_yscale('log')
+        if isinstance(yticks, tuple):
+            ax1.set_yticks(*yticks)
         # Plot track evolution
         ax2.plot(track_x, track_trace, label = 'track SNR')
         ax2.plot(track_x, track_back, label = 'Background median SNR')
@@ -476,8 +478,6 @@ class TimeFreqSpectrum(MultiSeries):
         ax2.set_ylabel(f'SNR')
         ax2.set_xlim(xlim)
         ax2.legend()
-        if isinstance(yticks, tuple):
-            plt.yticks(*yticks)
         plt.savefig(fsave ,dpi = 200)
         plt.close()
         return significance
