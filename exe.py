@@ -319,6 +319,7 @@ def main(argv = None):
     tpeak_range_plot = [gps - trange_peak[0], gps + trange_peak[1]]
     fspec_plot = np.logspace(np.log10(frange[0]), np.log10(frange[1]), 500)
     flabel = f'frequency [Hz]{frange}'
+    logging.info('Coherent...')
     cohSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                           figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh.png',
                           cmaptype = cmaptype, pcolorbins = pcolorbins,
@@ -337,6 +338,7 @@ def main(argv = None):
                             ylabel = flabel)
     
     if nullSPEC is not None:
+        logging.info('Null...')
         nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/'nullQscan_coh.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
@@ -350,6 +352,7 @@ def main(argv = None):
                             xlim = tpeak_range_plot, ylim = frange)
     
     for spec in SPECs:
+        logging.info(f'{spec.ifo}...')
         spec.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
                             figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
