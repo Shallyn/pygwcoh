@@ -443,8 +443,8 @@ class TimeFreqSpectrum(MultiSeries):
         z = func(x,y)
         track_spec = func(track_x, track_y)
         track_trace = \
-            track_spec[np.arange(len(track_x)), np.arange(len(track_y))] / len(track_x)
-        significance = np.sum(track_trace) / np.median(z)
+            track_spec[np.arange(len(track_x)), np.arange(len(track_y))] 
+        significance = np.sum(track_trace) / np.median(z) / len(track_x)
         track_back_spec = func(self.times, track_y)
         track_back = np.zeros(len(track_y))
         for i in range(len(track_y)):
@@ -456,11 +456,11 @@ class TimeFreqSpectrum(MultiSeries):
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
 
         fig = plt.figure(figsize = figsize)
-        gs = gridspec.GridSpec(5, 1)
+        gs = gridspec.GridSpec(10, 1)
         gs.update(left=0.05, right=0.95, wspace=0.02)
         plt.title(title)
-        ax1 = plt.subplot(gs[:3,0])
-        ax2 = plt.subplot(gs[4,0])
+        ax1 = plt.subplot(gs[:6,0])
+        ax2 = plt.subplot(gs[7:,0])
         im = ax1.pcolormesh(x, y, z, cmap = cmap, norm = norm)
         fig.colorbar(im, ax=ax1)
         ax1.plot(track_x, track_y, '-', color='#ba7b00', zorder=3, lw=1.5)
@@ -476,7 +476,6 @@ class TimeFreqSpectrum(MultiSeries):
         ax2.plot(track_x, track_back, label = 'Background median SNR')
         ax2.set_xlabel(f'gps [s]')
         ax2.set_ylabel(f'SNR')
-        ax2.set_xlim(xlim)
         ax2.legend()
         plt.savefig(fsave ,dpi = 200)
         plt.close()
