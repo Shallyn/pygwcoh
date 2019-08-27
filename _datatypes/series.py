@@ -436,7 +436,8 @@ class TimeFreqSpectrum(MultiSeries):
         cmap = plt.get_cmap(cmaptype)
         ylim = (self.frequencies[0], self.frequencies[-1])
         xlim = (max(track_x[0] - 0.5, self.trange[0]), min(track_x[1] + 0.5, self.trange[1]))
-        
+        print(xlim)
+        print(self.trange)
         if yticks is None:
             yticksval = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 5)
             yticks = (yticksval, ['%.1f'%_freq for _freq in yticksval])
@@ -458,7 +459,7 @@ class TimeFreqSpectrum(MultiSeries):
         track_back_spec = func(time_back, track_y)
         track_back = np.median(track_back_spec, axis = 1)
         significance = np.sum(track_trace) / np.median(z) / ntrack
-        
+
         if xlabel is None:
             xlabel = f'track significance = {significance}'
 
