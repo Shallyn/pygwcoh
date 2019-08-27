@@ -11,6 +11,7 @@ from .._utils import interp2d_complex
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
+from matplotlib import gridspec
 
 
 class Series(object):
@@ -423,6 +424,8 @@ class TimeFreqSpectrum(MultiSeries):
         # plot setting
         if figsize is None:
             figsize = (12, 7)
+        else:
+            figsize = (figsize[0], 2*figsize[1])
         cmap = plt.get_cmap(cmaptype)
         ylim = (self.frequencies[0], self.frequencies[-1])
         xlim = (max(track_x[0] - 0.5, self.trange[0]), min(track_x[1] + 0.5, self.trange[1]))
@@ -438,11 +441,14 @@ class TimeFreqSpectrum(MultiSeries):
         y = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 500)
         func = self.get_finterp(pset = 'abs')
         z = func(x,y)
-        track_val = func(track_x, track_y)
-        tmp = track_val[np.arange(len(track_x)), np.arange(len(track_y))]
-        integrate = \
-            track_val[np.arange(len(track_x)), np.arange(len(track_y))] / len(track_val)
-        significance = np.sum(integrate) / np.median(z)
+        track_spec = func(track_x, track_y)
+        track_trace = \
+            track_spec[np.arange(len(track_x)), np.arange(len(track_y))] / len(track_val)
+        significance = np.sum(track_trace) / np.median(z)
+        track_back_spec = func(self.times, track_y)
+        track_back = np.zeros(len(track_y))
+        for i in range(len(track_y)):
+            track_back[i] = np.median(track_back_spec[i, :])
         if xlabel is None:
             xlabel = f'track significance = {significance}'
 
@@ -450,16 +456,26 @@ class TimeFreqSpectrum(MultiSeries):
         norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
 
         fig = plt.figure(figsize = figsize)
-        ax = fig.add_subplot(111)
-        im = ax.pcolormesh(x, y, z, cmap = cmap, norm = norm)
-        fig.colorbar(im, ax=ax)
-        plt.plot(track_x, track_y, '-', color='#ba7b00', zorder=3, lw=1.5)
+        gs = gridspec.GridSpec(4, 1)
+        gs.update(left=0.05, right=0.95, wspace=0.02)
         plt.title(title)
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        plt.ylim(ylim)
-        plt.xlim(xlim)
-        plt.yscale('log')
+        ax1 = plt.subplot(gs[:3,0])
+        ax2 = plt.subplot(gs[3,0])
+        im = ax1.pcolormesh(x, y, z, cmap = cmap, norm = norm)
+        fig.colorbar(im, ax=ax1)
+        ax1.plot(track_x, track_y, '-', color='#ba7b00', zorder=3, lw=1.5)
+        ax1.set_xlabel(xlabel)
+        ax1.set_ylabel(ylabel)
+        ax1.set_ylim(ylim)
+        ax1.set_xlim(xlim)
+        ax1.set_yscale('log')
+        # Plot track evolution
+        ax2.plot(track_x, track_trace, label = 'track SNR')
+        ax2.plot(track_x, track_back, label = 'Background median SNR')
+        ax2.set_xlabel(f'gps [s]')
+        ax2.set_ylabel(f'SNR')
+        ax2.set_xlim(xlim)
+        ax2.legend()
         if isinstance(yticks, tuple):
             plt.yticks(*yticks)
         plt.savefig(fsave ,dpi = 200)
