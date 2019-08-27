@@ -451,7 +451,7 @@ class TimeFreqSpectrum(MultiSeries):
         track_spec = func(track_x, track_y)
         track_trace = track_spec[np.arange(ntrack), np.arange(ntrack)]
         
-        if self.size > 1e4:
+        if len(self.times) > 1e4:
             time_back = scipy_resample(self.times, 1e4)
         else:
             time_back = self.times
