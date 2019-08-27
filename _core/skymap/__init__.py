@@ -25,7 +25,7 @@ class Skymap(object):
         coh_snr_all = np.sqrt(np.sum(utdk2[:,:,:2], axis = 2))
         self._coh_snr = coh_snr_all.max(axis=1)
         self._projector  = MollweideProj()
-        self._coh_snr_pix = coh_snr_all.max(axis=0))
+        self._coh_snr_pix = coh_snr_all.max(axis=0)
         self._nside = npix2nside(len(self._coh_snr_pix))
         self._NULL = False
         if utdk2.shape[2] > 2:
