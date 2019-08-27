@@ -215,7 +215,8 @@ def main(argv = None):
     # Making Template
     logging.info('Generating template...')
     tmpl = Template(m1 = m1, m2 = m2, s1z = s1z, s2z = s2z, 
-                    fini = fini_SI, approx = approx, srate = fs)
+                    fini = fini_SI, approx = approx, srate = fs,
+                    duration = 20)
     logging.info(f'Get template, duration = {tmpl.dtpeak}')
     track_x, track_y = tmpl.track
     trange_peak = [min(8/max(track_y), sback), min(8/max(track_y), sfwd)]

@@ -40,6 +40,12 @@ class gwStrainCoherent(object):
                     fs = self._fs)
             for key in datadict:
                 self._data.append(datadict[key])
+        # Check duration
+        strain = self._data[0]
+        if strain.duration != self._duration:
+            self._duration = strain.duration
+        if strain.epoch != self._epoch:
+            self._epoch = strain.epoch
 
     def make_injection(self, tmpl, gps, ra_inj, de_inj, snr_expected,
                         psi = 0, phic = 0):
@@ -159,6 +165,7 @@ class gwStrainCoherent(object):
 
         retSPEC = [CreateEmptySpectrum(strain.ifo, info = None) for strain in self]
         frequencies = []
+        df = self._fs / strain.size
         for shift, qtile in tmpl.iter_fftQPlane(q = q, 
                                                 duration = self._duration,
                                                 fs = self._fs,
@@ -170,7 +177,6 @@ class gwStrainCoherent(object):
             for i, strain in enumerate(self):
                 stilde, hrtilde, hitilde, power_vec = \
                     strain.rfft_utils(tmpl, psd, cut, window)
-                df = self._fs / strain.size
                 hrwindowed = hrtilde * qwindow
                 hiwindowed = hitilde * qwindow
                 snr_r = correlate_real(stilde, hrwindowed, power_vec, df)
