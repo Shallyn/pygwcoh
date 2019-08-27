@@ -22,7 +22,7 @@ class Skymap(object):
     def __init__(self, utdk2, geocent_times):
         # utdk2 [ntimd, npix, ndet]
         self._geocent_times = geocent_times
-        coh_snr_all = np.sqrt(np.sum(utdk2[:,:,:2], axis = 2)
+        coh_snr_all = np.sqrt(np.sum(utdk2[:,:,:2], axis = 2))
         self._coh_snr = coh_snr_all.max(axis=1)
         self._projector  = MollweideProj()
         self._coh_snr_pix = coh_snr_all.max(axis=0))
