@@ -447,7 +447,7 @@ class TimeFreqSpectrum(MultiSeries):
         for i in range(ntrack):
             track_trace[i] = func(track_x[i], track_y[i])
             track_back_spec = func(self.times, track_y[i])
-            track_back[i] = np.median(track_back_spec[i, :])
+            track_back[i] = np.median(track_back_spec)
         significance = np.sum(track_trace) / np.median(z) / ntrack
                     
         if xlabel is None:
