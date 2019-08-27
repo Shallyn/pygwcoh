@@ -292,11 +292,15 @@ def main(argv = None):
     """
     logging.info('Ploting coherent SNR skymap & SNR time series...')
     skymap.plot_skymap(fsave, plot_peak = True)
+    skymap.plot_coherent_snr(fsave / f'Coherent_SNR.png')
     for snr in SNRs:
         snr.plot(fsave = fsave / f'SNR_{snr.ifo}.png', 
             pset = 'abs')
         snr.plot(fsave = fsave / f'SNR_{snr.ifo}_zoom.png',
             pset = 'abs', xrange = [gps - trange_peak[0], gps + trange_peak[1]])
+
+    gps_max = skymap.max_gps_time
+    logging.info(f'Coherent SNR peak at geocent time {gps_max}, while gps input is {gps}')
 
     """
     Step.3 Qscan...
@@ -310,8 +314,6 @@ def main(argv = None):
             trange = trange_duration,
             frange = frange)
 
-    gps_max = skymap.max_gps_time
-    logging.info(f'Coherent SNR peak at geocent time {gps_max}, while gps input is {gps}')
     """
     Step. Ploting coherent Q spectrum...
     """
