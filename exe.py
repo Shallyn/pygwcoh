@@ -51,6 +51,8 @@ def parseargs(argv):
     # Localize 
     parser.add_option('--ra', type = 'float', help = 'ra of this event, if added, will use this value.')
     parser.add_option('--de', type = 'float', help = 'dec of this event, if added, will use this value.')
+    parser.add_option('--gps-injection', type = 'float', help = 'Used for injection.')
+    parser.add_option('--snr', type = 'float', default = 9.0, help = 'Expected coherent SNR, used for injection.')
 
     # Skymap resolution
     parser.add_option('--nside', type = 'int', default = DEFAULT_NSIDE, help = 'Nside for skymap pix.')
@@ -108,7 +110,9 @@ def main(argv = None):
     args, empty = parseargs(argv)
     ra = args.ra
     de = args.de
-    
+    gps_inj = args.gps_injection
+    snr_expected = args.snr
+
     gps = args.gps
     Sgraceid = args.Sgraceid
     graceid = args.graceid
@@ -207,11 +211,22 @@ def main(argv = None):
     # Setting approx
     if approx is None:
         approx = get_proper_approx(m1, m2)
+    
+    # Making Template
+    logging.info('Generating template...')
+    tmpl = Template(m1 = m1, m2 = m2, s1z = s1z, s2z = s2z, 
+                    fini = fini_SI, approx = approx, srate = fs)
+    logging.info(f'Get template, duration = {tmpl.dtpeak}')
+    track_x, track_y = tmpl.track
+    trange_peak = [min(8/max(track_y), sback), min(8/max(track_y), sfwd)]
+    if sback < 1.5*tmpl.duration:
+        LOGGER.warning(f'Time duration of template is too long.\n')
+        sback = 1.5 * tmpl.dtpeak
 
     # Now let's try loading data
     tstart = gps - sback
     tend = gps + sfwd
-    
+
     # Create Coherent Object
     logging.info(f'Builing coherent strain, {tstart} ... {tend}')
     Strains = gwStrainCoherent(tstart, tend-tstart, fs = fs, verbose = True)
@@ -234,14 +249,20 @@ def main(argv = None):
         psddict = get_refpsd(refpsd)
     Strains.set_psd(psddict)
 
-    # Step.3 Making Template
-    logging.info('Generating template...')
-    tmpl = Template(m1 = m1, m2 = m2, s1z = s1z, s2z = s2z, 
-                    fini = fini_SI, approx = approx, srate = fs, 
-                    duration = 0.8 * sback)
-    logging.info(f'Get template, duration = {tmpl.duration}')
-    track_x, track_y = tmpl.track
-    trange_peak = [min(8/max(track_y), sback), min(8/max(track_y), sfwd)]
+    # Shoule we make injection?
+    if injection:
+        # Checking ra, de
+        if ra is None:
+            LOGGER.warning('You have not set ra, now we set it to 0\n')
+            ra = 0
+        if de is None:
+            LOGGER.warning('You have not set de, now we set it to 0\n')
+            de = 0
+        if gps_inj is None:
+            LOGGER.warning(f'You have not set gps-injection, now we set it to {gps}\n')
+            gps_inj = gps
+        logging.info(f'Making injection... expected snr = {snr_expected}')
+        Strains.make_injection(tmpl, gps_inj, ra_inj, de_inj, snr_expected)
 
     """
     Preparatory work complete

@@ -441,14 +441,15 @@ class TimeFreqSpectrum(MultiSeries):
         y = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 500)
         func = self.get_finterp(pset = 'abs')
         z = func(x,y)
-        track_spec = func(track_x, track_y)
-        track_trace = \
-            track_spec[np.arange(len(track_x)), np.arange(len(track_y))] 
-        significance = np.sum(track_trace) / np.median(z) / len(track_x)
-        track_back_spec = func(self.times, track_y)
-        track_back = np.zeros(len(track_y))
-        for i in range(len(track_y)):
+        ntrack = len(track_x)
+        track_trace = np.zeros(ntrack)
+        track_back = np.zeros(ntrack)
+        for i in range(ntrack):
+            track_trace[i] = func(track_x[i], track_y[i])
+            track_back_spec = func(self.times, track_y[i])
             track_back[i] = np.median(track_back_spec[i, :])
+        significance = np.sum(track_trace) / np.median(z) / ntrack
+                    
         if xlabel is None:
             xlabel = f'track significance = {significance}'
 

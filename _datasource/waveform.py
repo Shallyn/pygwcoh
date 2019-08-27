@@ -87,7 +87,6 @@ class Template(TimeSeries):
                                    srate = fs,
                                    f_ini = self._fini,
                                    approx = self._approx)
-
     @property
     def distance(self):
         return self._D
@@ -157,6 +156,17 @@ class Template(TimeSeries):
         idx_end = min(len(self), idx_peak + extra_index)
         time = self.time - self.time[idx_peak] + epoch_peak
         return time[:idx_end], self.phasedot[:idx_end] / (np.pi)
+
+    def get_horizon(self, psd):
+        h = self.template
+        htilde = np.fft.rfft(h.real) / self.fs
+        hfreq = np.fft.rfftfreq(h.size, d = 1./self.fs)
+        df = hfreq[1] - hfreq[0]
+        power_vec = psd(hfreq)
+        ohf = 1*(htilde * htilde.conjugate() / power_vec).sum() * df
+        sig2 = np.abs(ohf)
+        rhor = self.distance * np.sqrt(sig2)
+        return rhor
     
     def iter_fftQPlane(self, q, duration, fs, frange = None, mismatch = None):
         if frange is None:

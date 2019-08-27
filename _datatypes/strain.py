@@ -9,7 +9,7 @@ from .detector import Detector
 from .._core.filter import padinsert, cutinsert, correlate_real, get_psdfun
 from .._core import resample
 from scipy import signal
-
+from scipy.interpolate import InterpolatedUnivariateSpline
 
 
 # H1-118 L1-150 V1-53
@@ -91,6 +91,32 @@ class gwStrain(TimeSeries):
         else:
             return self
     
+    def make_injection(self, tmpl, gps, ra, de, distance,
+                            psi = 0, phic = 0):
+        ar, delay = self.ifo_get_at_and_delay(ra, de, psi, gps)
+        gps_inj = gps + delay
+        wf = (distance / tmpl.distance) * tmpl.template * np.exp(1.j*phic)
+        signal = wf.real * ap[0] + wf.imag * ap[1]
+        t_start = gps_inj - np.abs(wf).argmax() / tmpl.fs
+        t_end = t_start + len(signal) / tmpl.fs
+        if tmpl.fs != self.fs:
+            wf = resample(wf, tmpl.fs, self.fs)
+        fs = self.fs
+        th = np.arange(t_start, t_end, 1./fs)
+        if t_start < self.epoch:
+            signal = signal[int((self.epoch-t_start)*fs):]
+            th = th[int((self.epoch-t_start)*fs):]
+            t_start = self.epoch
+        if t_end > self.epoch + self.duration:
+            signal = signal[:int((t_end - self.epoch - self.duration)*fs)]
+            th = th[:int((t_end - self.epoch - self.duration)*fs)]
+            t_end = self.epoch + self.duration
+        th = th - th[0] + t_start
+        itp_strain = InterpolatedUnivariateSpline(th, signal)
+        idx_start = int((t_start - self.epoch) * fs)
+        idx_end = int((t_end - self.epoch) * fs)
+        vtime = self.time
+        self._value[idx_start:idx_end] += itp_strain(vtime[idx_start:idx_end])
 
     
     def matched_filter(self,

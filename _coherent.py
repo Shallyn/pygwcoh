@@ -40,6 +40,17 @@ class gwStrainCoherent(object):
                     fs = self._fs)
             for key in datadict:
                 self._data.append(datadict[key])
+
+    def make_injection(self, tmpl, gps, ra_inj, de_inj, snr_expected,
+                        psi = 0, phic = 0):
+        SNR = 0
+        for strain in self:
+            horizon = tmpl.get_horizon(psd = strain.psdfun_set)
+            SNR += horizon**2
+        distance = np.sqrt(SNR) / snr_expected
+        for strain in self:
+            strain.make_injection(tmpl, gps, ra_inj, de_inj, distance, 
+                        psi = psi, phic = phic)
                 
     def set_psd(self, refpsd):
         for strain in self:
