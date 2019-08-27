@@ -165,7 +165,6 @@ class gwStrainCoherent(object):
 
         retSPEC = [CreateEmptySpectrum(strain.ifo, info = None) for strain in self]
         frequencies = []
-        df = self._fs / strain.size
         for shift, qtile in tmpl.iter_fftQPlane(q = q, 
                                                 duration = self._duration,
                                                 fs = self._fs,
@@ -179,6 +178,7 @@ class gwStrainCoherent(object):
                     strain.rfft_utils(tmpl, psd, cut, window)
                 hrwindowed = hrtilde * qwindow
                 hiwindowed = hitilde * qwindow
+                df = self._fs / strain.size
                 snr_r = correlate_real(stilde, hrwindowed, power_vec, df)
                 snr_i = correlate_real(stilde, hiwindowed, power_vec, df)
                 snr = snr_r + 1.j*snr_i
