@@ -76,7 +76,7 @@ def parseargs(argv):
 
     # For data find
     parser.add_option('--stepback', type = 'int', default = 15, help = 'Used for GraceDB data load.')
-    parser.add_option('--stepforward', type = 'int', default = 15, help = 'Used for GraceDB data load.')
+    parser.add_option('--stepforward', type = 'int', default = 5, help = 'Used for GraceDB data load.')
     
     # Specify detector
     parser.add_option('--H1', action = 'store_true', help = 'Add detector')
