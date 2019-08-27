@@ -132,7 +132,7 @@ class gwStrainCoherent(object):
             utdk[:,:,:,i]  = np.multiply(u_matrix[:,:,:,i], snr_matrix)
         utdk = np.sum(utdk, axis = 2)
         utdk2 = np.multiply(utdk, utdk.conjugate()).real
-        smap = Skymap(utdk2)
+        smap = Skymap(utdk2, geocent_times)
         return retSNR, smap
 
 

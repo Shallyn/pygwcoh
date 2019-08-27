@@ -19,9 +19,13 @@ __all__ = ['nside2npix',
 
 
 class Skymap(object):
-    def __init__(self, utdk2):
+    def __init__(self, utdk2, geocent_times):
+        # utdk2 [ntimd, npix, ndet]
+        self._geocent_times = geocent_times
+        coh_snr_all = np.sqrt(np.sum(utdk2[:,:,:2], axis = 2)
+        self._coh_snr = coh_snr_all.max(axis=1)
         self._projector  = MollweideProj()
-        self._coh_snr_pix = np.sqrt(np.sum(utdk2[:,:,:2], axis = 2).max(axis=0))
+        self._coh_snr_pix = coh_snr_all.max(axis=0))
         self._nside = npix2nside(len(self._coh_snr_pix))
         self._NULL = False
         if utdk2.shape[2] > 2:
@@ -29,6 +33,10 @@ class Skymap(object):
             null = np.sum(utdk2[:,:,2:], axis=2)
             null_snr2 = null.sum(axis=0) / utdk2.shape[0]
             self._null_snr_pix = np.sqrt(null_snr2)
+    @property
+    def max_gps_time(self):
+        idx = self._coh_snr.argmax()
+        return self._geocent_times[idx]
 
     @property
     def max_ra_de(self):
