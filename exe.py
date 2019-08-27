@@ -220,9 +220,9 @@ def main(argv = None):
     logging.info(f'Get template, duration = {tmpl.dtpeak}')
     track_x, track_y = tmpl.track
     trange_peak = [min(8/max(track_y), sback), min(8/max(track_y), sfwd)]
-    if sback < 1.5*tmpl.duration:
+    if sback < 2*tmpl.duration:
         LOGGER.warning(f'Time duration of template is too long.\n')
-        sback = 1.5 * tmpl.dtpeak
+        sback = 2 * tmpl.dtpeak
 
     # Now let's try loading data
     tstart = gps - sback

@@ -5,6 +5,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 
 import numpy as np
 from .._core import resample
+from scipy.signal import resample as scipy_resample
 from scipy.interpolate import interp1d, interp2d
 from .._utils import interp2d_complex
 
@@ -420,10 +421,16 @@ class TimeFreqSpectrum(MultiSeries):
                                  title = None):
         # Track
         track_x, track_y = tmpl.get_track(gps_trigger)
-        
+        ntrack = len(track_x)
+        if ntrack > 1e4:
+            fs_plot = int(self.fs * (1e4 / ntrack))
+            track_x = resample(track_x, tmpl.fs, fs_plot)
+            track_y = resample(track_y, tmpl.fs, fs_plot)
+        else:
+            fs_plot = self.fs
         # plot setting
         if figsize is None:
-            figsize = (12, 7)
+            figsize = (12, 14)
         else:
             figsize = (figsize[0], 2*figsize[1])
         cmap = plt.get_cmap(cmaptype)
@@ -437,19 +444,21 @@ class TimeFreqSpectrum(MultiSeries):
         if title is None:
             title = self._info
 
-        x = np.arange(xlim[0], xlim[1], self._deltax)
+        x = np.arange(xlim[0], xlim[1], 1./fs_plot)
         y = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 500)
         func = self.get_finterp(pset = 'abs')
         z = func(x,y)
-        ntrack = len(track_x)
-        track_trace = np.zeros(ntrack)
-        track_back = np.zeros(ntrack)
-        for i in range(ntrack):
-            track_trace[i] = func(track_x[i], track_y[i])
-            track_back_spec = func(self.times, track_y[i])
-            track_back[i] = np.median(track_back_spec)
+        track_spec = func(track_x, track_y)
+        track_trace = track_spec[np.arange(ntrack), np.arange(ntrack)]
+        
+        if self.size > 1e4:
+            time_back = scipy_resample(self.times, 1e4)
+        else:
+            time_back = self.times
+        track_back_spec = func(time_back, track_y)
+        track_back = np.median(track_back_spec, axis = 1)
         significance = np.sum(track_trace) / np.median(z) / ntrack
-                    
+        
         if xlabel is None:
             xlabel = f'track significance = {significance}'
 
