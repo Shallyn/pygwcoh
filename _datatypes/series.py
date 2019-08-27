@@ -426,6 +426,7 @@ class TimeFreqSpectrum(MultiSeries):
             fs_plot = int(self.fs * (1e4 / ntrack))
             track_x = resample(track_x, tmpl.fs, fs_plot)
             track_y = resample(track_y, tmpl.fs, fs_plot)
+            ntrack = len(track_x)
         else:
             fs_plot = self.fs
         # plot setting
