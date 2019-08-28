@@ -10,6 +10,7 @@ import numpy as np
 from .._utils import CEV, LOGGER
 import sys
 from .._datatypes import gwStrain
+from .._core import resample
 
 channel_dict = {'H1_CALIB':'H1:GDS-CALIB_STRAIN', 'H1_GATED':'H1:GDS-GATED_STRAIN', 'H1_IDQ': 'H1:IDQ-PGLITCH_OVL_16_4096' ,\
                 'L1_CALIB':'L1:GDS-CALIB_STRAIN', 'L1_GATED':'L1:GDS-GATED_STRAIN', 'L1_IDQ': 'L1:IDQ-PGLITCH_OVL_16_4096' ,\
@@ -205,3 +206,118 @@ def parse_datafile(filename):
     gf0 = int(tmp[0])
     gf1 = gf0 + int(tmp[1])
     return gf0, gf1
+
+def load_data_from_cache(tstart, tend, ifos, fcache, channel = 'GATED', fs = 4096):
+    LOGGER.info(f'load data from {fcache}...')
+    cache = LIGOCache(fcache)
+    return cache.load_data(tstart, tend, ifos, fs, channel = channel)
+
+# Ligo Cache
+class LIGOCache(object):
+    def __init__(self, filename):
+        self._fcache = filename
+        with open(self._fcache, 'r') as f:
+            contents = f.read()
+        self._contents = contents
+                
+    def _iter_segment(self, ifo):
+        for line in self._contents.split('\n'):
+            spt = line.split(' ')
+            if len(spt) != 5:
+                continue
+            name, frame, gps_start_str, gps_duration_str, fname = spt
+            ifo_name = name + '1'
+            if ifo_name == ifo:
+                gps = float(gps_start_str)
+                timeseg = TimeSegment(gps, gps + float(gps_duration_str))
+                yield frame, timeseg, fname[16:]
+            else:
+                continue
+                
+    def load_data(self, gps_start, gps_end, ifos, fs, channel = 'GATED'):
+        """
+        return dict(ifo : gwStrain)
+        """
+        #print(self._contents)
+        gps_seg = TimeSegment(gps_start, gps_end)
+        ret = dict()
+        for ifo in ifos:
+            channel_name = f'{ifo}_{channel}'
+            if channel in channel_dict:
+                channel_ifo = channel_dict[channel_name]
+            else:
+                channel_ifo = channel_name
+            value = np.array([])
+            epoch = gps_start
+            check_epoch = True
+            for frame, timeseg, fname in self._iter_segment(ifo):
+                seg = gps_seg.check_overlap(timeseg)
+                if seg is None:
+                    continue
+                if check_epoch:
+                    epoch = seg.start
+                    check_epoch = False
+                data = TimeSeries.read(fname, channel_ifo)
+                srate = data.sample_rate.value
+                idx = seg.get_idx(timeseg.start, srate)
+                data = data[idx]
+                if fs != srate
+                    data = resample(data, srate, fs)
+                value = np.insert(value, len(value), data)
+            ret[ifo] = gwStrain(value, epoch, ifo, fs, info = f'{ifo}_strain')
+        return ret
+
+
+
+class TimeSegment(object):
+    def __init__(self, start, end):
+        self._start = start
+        self._end = end
+    
+    @property
+    def start(self):
+        return self._start
+    
+    @property
+    def end(self):
+        return self._end
+    
+    def __str__(self):
+        return f'({self.start}, {self.end})'
+    
+    def check_overlap(self, seg):
+        if seg.end < self.start or seg.start > seg.end:
+            return None
+        if seg.start < self.start:
+            start = self.start
+        else:
+            start = seg.start
+        
+        if seg.end > self.end:
+            end = self.end
+        else:
+            end = seg.end
+        return TimeSegment(start, end)
+
+    def get_slice(self, epoch, fs):
+        idx_start = int( fs*(self.start - epoch))
+        idx_end = int( fs*(self.end - epoch) )
+        return slice(idx_start, idx_end)
+    
+    def overlap_slice(self, seg, fs):
+        """
+        return overlap part of the two TimeSegment
+        """
+        if seg.end < self.start or seg.start > self.end:
+            return None
+        if seg.start < self.start:
+            idx_start = int((self.start - seg.start) * fs)
+        else:
+            idx_start = 0
+        
+        if seg.end > self.end:
+            idx_end = int((self.end - seg.start) * fs)
+        else:
+            idx_end = int((seg.end - seg.start) * fs)
+        return slice(idx_start, idx_end)
+

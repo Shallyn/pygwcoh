@@ -218,30 +218,20 @@ class Commander(object):
     Convert Python function parameters to command options
     options format: --option-format, corresponding to option_format
     """
-    def __init__(self, options):
-        self._options = options
-        self._funcpms_dict = {}
-        for opt in options:
-            pms = self._opt2pms(opt)
-            if pms not in self._funcpms_dict:
-                self._funcpms[pms] = opt
-            else:
-                sys.stderr.write(f'{WARNING}:Duplicate options: {opt}.\n')
+    def __init__(self, executable):
+        self._exe = executable
 
-    def _opt2pms(self, option):
-        if option[:2] != '--':
-            raise ValueError(f'Invalid option: {option}')
-        pms = '_'.join(option[2:].split('-'))
-        return pms
+    def _opt2cmd(self, opt):
+        return '--' + '-'.join(opt.split('_'))
 
-    def __call__(self, *args, **kwargs):
-        cmd_options = []
-        for pms in kwargs:
-            opt = self._funcpms_dict[pms]
-            val = kwargs[pms]
-            cmd_option.append(opt)
+    def __call__(self, **kwargs):
+        cmd_options = ['{}'.format(self._exe)]
+        for opt in kwargs:
+            val = kwargs[opt]
+            cmd = self._opt2cmd(opt)
+            cmd_options.append(cmd)
             if val is not None:
-                cmd_option.append(f'{val}')
+                cmd_options.append(f'{val}')
         return ' '.join(cmd_options)
 
 #-----switch method-----#

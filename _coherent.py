@@ -4,7 +4,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 """
 
 import numpy as np
-from ._datasource import load_data_from_ifo
+from ._datasource import load_data_from_ifo, load_data_from_cache
 from ._core.filter import correlate_real
 from ._core.skymap import nside2npix, pix2ang, Skymap
 from ._core.utdk import calc_sngl_Gpc_and_shift, calc_sngl_shift
@@ -32,7 +32,8 @@ class gwStrainCoherent(object):
         
     def load_data(self, cache = None, ifos = None, channel = 'GATED'):
         if cache is not None:
-            pass
+            datatict = load_data_from_cache(self._epoch, self._epoch + self._duration, 
+                    ifos = ifos, fcache = cache, channel = channel, fs = self._fs)
         else:
             datadict = load_data_from_ifo(self._epoch, 
                     self._epoch + self._duration, 
