@@ -261,7 +261,7 @@ class LIGOCache(object):
                 srate = data.sample_rate.value
                 idx = seg.get_idx(timeseg.start, srate)
                 data = data[idx]
-                if fs != srate
+                if fs != srate:
                     data = resample(data, srate, fs)
                 value = np.insert(value, len(value), data)
             ret[ifo] = gwStrain(value, epoch, ifo, fs, info = f'{ifo}_strain')
