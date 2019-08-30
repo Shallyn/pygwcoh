@@ -7,7 +7,7 @@ import numpy as np
 from ._datasource import load_data_from_ifo, load_data_from_cache
 from ._core.filter import correlate_real
 from ._core.skymap import nside2npix, pix2ang, Skymap
-from ._core.utdk import calc_sngl_Gpc_and_shift, calc_sngl_shift
+from ._core.utdk import calc_sngl_Gpc_and_shift
 from ._datatypes.strain import CreateEmptySpectrum
 from ._datatypes.series import TimeFreqSpectrum
 from ._utils import interp2d_complex, LOGGER
