@@ -9,7 +9,7 @@ from .._utils import LOGGER, interp1d_complex, Progress
 import sys
 sys.path.append('../../Cextension')
 try:
-    from . import PyGWCOH as pg
+    import PyGWCOH as pg
     CEXT = True
 except:
     CEXT = False
