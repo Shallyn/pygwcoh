@@ -7,9 +7,9 @@ import numpy as np
 from .._datatypes.detector import Detector
 from .._utils import LOGGER, interp1d_complex, Progress
 import sys
-
+sys.path.append('../../Cextension')
 try:
-    from . import _PyGWCOH as pg
+    from . import PyGWCOH as pg
     CEXT = True
 except:
     CEXT = False
@@ -38,12 +38,12 @@ def calc_sngl_Gpc_and_shift_python(gwSNR, times, ra_pix, de_pix, gps_geocent):
     sys.stderr.write(f'{remarks}..Done\n')
     return Gpc_sngl, snr_sngl
 
-def calc_sngl_shift(ifo, snr, times, ra, de, gps_trigger):
-    pass
 
 """
 For Cextension interface
 """
 
 def calc_sngl_Gpc_and_shift_cextension(gwSNR, times, ra_pix, de_pix, gps_geocent):
-    pass
+    ifo = gwSNR.ifo
+    SNR_value = gwSNR.value
+    SNR_times = gwSNR.time
