@@ -1,7 +1,7 @@
 # Makefile.am
 AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
-pkgpyexecdir = ../_core
+pkgpyexecdir = /usr/lib
 
 pkgpyexec_LTLIBRARIES = PyGWCOH.la
 
