@@ -7,7 +7,7 @@ import numpy as np
 from .._core import resample
 from scipy.signal import resample as scipy_resample
 from scipy.interpolate import interp1d, interp2d
-from .._utils import interp2d_complex
+from .._utils import interp2d_complex, LOGGER
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
@@ -420,7 +420,7 @@ class TimeFreqSpectrum(MultiSeries):
                                  yticks = None,
                                  title = None):
         # Track
-        track_x, track_y = tmpl.get_track(gps_trigger)
+        track_x, track_y = tmpl.get_track(gps_trigger,0)
         ntrack = len(track_x)
         if ntrack > 1e4:
             fs_plot = int(self.fs * (1e4 / ntrack))
@@ -431,9 +431,7 @@ class TimeFreqSpectrum(MultiSeries):
             fs_plot = self.fs
         # plot setting
         if figsize is None:
-            figsize = (12, 14)
-        else:
-            figsize = (figsize[0], 2*figsize[1])
+            figsize = (12, 7)
         cmap = plt.get_cmap(cmaptype)
         ylim = (self.frequencies[0], self.frequencies[-1])
         xlim = (max(track_x[0] - 0.5, self.trange[0]), min(track_x[-1] + 0.5, self.trange[1]))
@@ -448,16 +446,6 @@ class TimeFreqSpectrum(MultiSeries):
         y = np.logspace(np.log10(ylim[0]), np.log10(ylim[1]), 500)
         func = self.get_finterp(pset = 'abs')
         z = func(x,y)
-        track_spec = func(track_x, track_y)
-        track_trace = track_spec[np.arange(ntrack), np.arange(ntrack)]
-        
-        if len(self.times) > 1e4:
-            time_back = scipy_resample(self.times, 10000)
-        else:
-            time_back = self.times
-        track_back_spec = func(time_back, track_y)
-        track_back = np.median(track_back_spec, axis = 1)
-        significance = np.sum(track_trace) / np.median(z) / ntrack
 
         if xlabel is None:
             xlabel = f'track significance = {significance}'
@@ -469,8 +457,7 @@ class TimeFreqSpectrum(MultiSeries):
         gs = gridspec.GridSpec(10, 1)
         gs.update(left=0.05, right=0.95, wspace=0.02)
         plt.title(title)
-        ax1 = plt.subplot(gs[:6,0])
-        ax2 = plt.subplot(gs[7:,0])
+        ax1 = plt.subplot(111)
         im = ax1.pcolormesh(x, y, z, cmap = cmap, norm = norm)
         fig.colorbar(im, ax=ax1)
         ax1.plot(track_x, track_y, '-', color='#ba7b00', zorder=3, lw=1.5)
@@ -482,34 +469,73 @@ class TimeFreqSpectrum(MultiSeries):
         if isinstance(yticks, tuple):
             ax1.set_yticks(*yticks)
         # Plot track evolution
-        ax2.plot(track_x, track_trace, label = 'track SNR')
-        ax2.plot(track_x, track_back, label = 'Background median SNR')
-        ax2.set_xlabel(f'gps [s]')
-        ax2.set_ylabel(f'SNR')
-        ax2.legend()
         plt.savefig(fsave ,dpi = 200)
         plt.close()
         return significance
 
 
-    def calc_integrate_track(self, track_x, track_y,
-                    dt_idx = 10):
-        dt_idx = int(dt_idx)
-        integ = np.zeros(len(self.frequencies))
-        freqgrad = np.gradient(self.frequencies)
-        time_split = np.zeros(len(self.frequencies))
+    def calc_track_significance(self, tmpl, gps_trigger,
+                    back_collect_num = 100, fs_int = 1000, thresh = 0.7, wide = 1):
+        LOGGER.info('Calculating trace significance...\n')
+        SNR_median = np.median(self._array)
+        track_x, track_y = tmpl.get_track(0,0)
+        ntrack = len(track_x)
+        exp_nsamp = int(fs_int * (track_x[-1] - track_x[0]) / tmpl.fs)
+        if ntrack > exp_nsamp:
+            track_x = resample(track_x, tmpl.fs, fs_int)
+            track_y = resample(track_y, tmpl.fs, fs_int)
+        else:
+            fs_int = tmpl.fs
+        func = self.get_finterp(pset = 'abs')
+        tlim_start, tlim_end = self.trange
+        # Get Track
+        track_x_re, track_y_re = track_wrapper(track_x, track_y, gps_trigger, tlim_start, tlim_end)
+        trigger_traceSNR = calc_track_integration(func, track_x_re, track_y_re)
+        trigger_traceSNR_int = trigger_traceSNR / len(trigger_traceSNR)
+        # Set threshold
+        thresh = trigger_traceSNR_int * thresh
+        # Get gps trigger index
+        idx_gps_trigger = int( (gps_trigger - self.epoch[-1]) * self.fs )
+        idx_gps_wide = int( wide * self.fs )
+        background = []
+        count = 0
         for i, freq in enumerate(self.frequencies):
-            deltafreq = track_y - freq
-            idx = np.where( np.abs(deltafreq) == np.min(np.abs(deltafreq)) )[0][0]
-            gps = track_x[idx]
-            deltatime = self.x + self.epoch[i] - gps
-            dtrange = dt_idx / freq
-            idx_times = np.where( np.abs(deltatime) < dtrange )[0]
-            integ[i] = np.max(np.abs(self._array[i, idx_times]))
-            time_split[i] = gps
-        ret = np.sum(integ * np.gradient(time_split) * freqgrad)
-        return ret / (time_split[-1] - time_split[0]) / (self.frequencies[-1] - self.frequencies[0])
-        
+            snrs = self._array[i,:(idx_gps_trigger - idx_gps_wide)]
+            indexes = np.where( snrs > thresh )[0]
+            for idx in indexes:
+                this_gps = self.epoch[0] + idx * self.deltax
+                track_x_re, track_y_re = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
+                back_trackSNR = calc_track_integration(func, track_x_re, track_y_re)
+                background.append(back_trackSNR.tolist())
+                count += 1
+                if count > back_collect_num:
+                    return trigger_traceSNR, np.array(background)
+        return trigger_traceSNR, np.array(background)
+
+def track_wrapper(track_x, track_y, gps, limit_start, limit_end):
+    track_x = track_x + gps
+    ini = track_x[0]
+    end = track_x[-1]
+    deltax = track_x[1] - ini
+    if ini > limit_end or end < limit_start:
+        return None
+    if ini < limit_start:
+        idx_start = int((limit_start - ini) / deltax) + 1
+    else:
+        idx_start = 0
+    
+    if end > limit_end:
+        idx_end = int( (limit_end - ini) / deltax ) - 1
+    else:
+        idx_end = len(track_x)
+    return track_x[idx_start:idx_end], track_y[idx_start:idx_end]
+
+def calc_track_integration(func, track_x, track_y):
+    ntrack = len(track)
+    idx_trace = np.arange(ntrack)
+    trace = func(track_x, track_y)[idx_trace, idx_trace]
+    return trace
+
 
 def get_2D_argpeak(matrix):
     arg = np.where(matrix == np.max(matrix))
