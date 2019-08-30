@@ -7,9 +7,9 @@ import numpy as np
 from .._datatypes.detector import Detector
 from .._utils import LOGGER, interp1d_complex, Progress
 import sys
-sys.path.append('../../Cextension')
+
 try:
-    import PyGWCOH as pg
+    from ..Cextension import PyGWCOH as pg
     CEXT = True
 except:
     CEXT = False
