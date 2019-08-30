@@ -47,4 +47,5 @@ def calc_sngl_Gpc_and_shift_cextension(gwSNR, times, ra_pix, de_pix, gps_geocent
     ifo = gwSNR.ifo
     SNR_value = gwSNR.value
     SNR_times = gwSNR.time
-    return pg.Gpc_time_pix(SNR_value, SNR_times, ra_pix, de_pix, times, ifo, gps_geocent)
+    return pg.Gpc_time_pix(SNR_value.real, SNR_value.imag, 
+        SNR_times, ra_pix, de_pix, times, ifo, gps_geocent)

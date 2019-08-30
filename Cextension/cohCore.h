@@ -17,12 +17,14 @@
 INT Gpc_and_delay_interpolate(CHAR *ifo,
                               REAL8Vector *ra,
                               REAL8Vector *de,
-                              REAL8Vector *SNR,
+                              REAL8Vector *SNR_real,
+                              REAL8Vector *SNR_imag,
                               REAL8Vector *time_SNR,
                               REAL8Vector *time,
                               REAL8 geocent_time,
-                              REAL8Array **Gpc,
-                              REAL8Array **SNR_matrix);
+                              REAL8Array **Gpc_matrix,
+                              REAL8Array **SNR_real_matrix,
+                              REAL8Array **SNR_imag_matrix);
 
 
 #endif
