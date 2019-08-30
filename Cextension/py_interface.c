@@ -10,7 +10,7 @@ static PyObject * Fun_Gpc_time_pix(PyObject *self, PyObject *args)
     PyObject *py_ra, *py_de, *py_time;
     CHAR *ifo;
     REAL8 geocent_time;
-    if(!PyArg_ParseTuple(args, "OOOOOsd",
+    if(!PyArg_ParseTuple(args, "OOOOOOsd",
                          &py_SNR_real, &py_SNR_imag, &py_SNR_time,
                          &py_ra, &py_de, &py_time,
                          &ifo, &geocent_time))
