@@ -475,22 +475,12 @@ class TimeFreqSpectrum(MultiSeries):
         plt.close()
 
 
-    def calc_track_significance(self, tmpl, gps_trigger,
-                    back_collect_num = 100, fs_int = 1000, thresh = 0.7, wide = 1):
+    def calc_track_significance(self, gps_trigger,
+                    back_collect_num = 100, thresh = 0.7, wide = 1):
         SNR_median = np.median(self._array)
-        track_x, track_y = tmpl.get_track(0,0)
-        ntrack = len(track_x)
-        exp_nsamp = int(fs_int * (track_x[-1] - track_x[0]) / tmpl.fs)
-        if ntrack > exp_nsamp:
-            track_x = resample(track_x, tmpl.fs, fs_int)
-            track_y = resample(track_y, tmpl.fs, fs_int)
-        else:
-            fs_int = tmpl.fs
-        func = self.get_finterp(pset = 'abs')
         tlim_start, tlim_end = self.trange
         # Get Track
-        track_x_re, track_y_re = track_wrapper(track_x, track_y, gps_trigger, tlim_start, tlim_end)
-        trigger_traceSNR = calc_track_integration(func, track_x_re, track_y_re)
+        trigger_traceSNR = self.calc_track_integration(gps_trigger)
         trigger_traceSNR_int = np.sum(trigger_traceSNR) / len(trigger_traceSNR)
         # Set threshold
         thresh = trigger_traceSNR_int * thresh
@@ -504,13 +494,16 @@ class TimeFreqSpectrum(MultiSeries):
             indexes = np.where( snrs > thresh )[0]
             for idx in indexes:
                 this_gps = self.epoch[0] + idx * self.deltax
-                track_x_re, track_y_re = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
-                back_trackSNR = calc_track_integration(func, track_x_re, track_y_re)
+                back_trackSNR = self.calc_track_integration(this_gps)
                 background.append(back_trackSNR.tolist())
                 count += 1
                 if count > back_collect_num:
                     return trigger_traceSNR, np.array(background)
         return trigger_traceSNR, np.array(background)
+
+    def calc_track_integration(self, gps):
+        idx = int( (gps - self.epoch[-1]) * self.fs)
+        return self._array[:, idx]
 
 def track_wrapper(track_x, track_y, gps, limit_start, limit_end):
     track_x = track_x + gps
