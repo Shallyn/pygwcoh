@@ -477,7 +477,6 @@ class TimeFreqSpectrum(MultiSeries):
 
     def calc_track_significance(self, tmpl, gps_trigger,
                     back_collect_num = 100, fs_int = 1000, thresh = 0.7, wide = 1):
-        LOGGER.info('Calculating trace significance...\n')
         SNR_median = np.median(self._array)
         track_x, track_y = tmpl.get_track(0,0)
         ntrack = len(track_x)
@@ -532,7 +531,7 @@ def track_wrapper(track_x, track_y, gps, limit_start, limit_end):
     return track_x[idx_start:idx_end], track_y[idx_start:idx_end]
 
 def calc_track_integration(func, track_x, track_y):
-    ntrack = len(track)
+    ntrack = len(track_x)
     idx_trace = np.arange(ntrack)
     trace = func(track_x, track_y)[idx_trace, idx_trace]
     return trace
