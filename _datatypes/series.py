@@ -491,7 +491,7 @@ class TimeFreqSpectrum(MultiSeries):
         # Get Track
         track_x_re, track_y_re = track_wrapper(track_x, track_y, gps_trigger, tlim_start, tlim_end)
         trigger_traceSNR = calc_track_integration(func, track_x_re, track_y_re)
-        trigger_traceSNR_int = trigger_traceSNR / len(trigger_traceSNR)
+        trigger_traceSNR_int = np.sum(trigger_traceSNR) / len(trigger_traceSNR)
         # Set threshold
         thresh = trigger_traceSNR_int * thresh
         # Get gps trigger index
