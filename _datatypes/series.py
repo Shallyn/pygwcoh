@@ -459,7 +459,7 @@ class TimeFreqSpectrum(MultiSeries):
 
         fig = plt.figure(figsize = figsize)
         plt.title(title)
-        ax1 = plt.subplot(111)
+        ax1 = fig.add_subplot(111)
         im = ax1.pcolormesh(x, y, z, cmap = cmap, norm = norm)
         fig.colorbar(im, ax=ax1)
         plt.plot(track_x, track_y, '-', color='#ba7b00', zorder=3, lw=1.5)
