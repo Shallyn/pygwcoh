@@ -336,11 +336,10 @@ def main(argv = None):
                           ylabel = flabel,
                           xlim = tpeak_range_plot, ylim = frange)
 
-    signif_coh = cohSPEC.plot_spectrum_with_track(tmpl, gps_max, 
+    cohSPEC.plot_spectrum_with_track(tmpl, gps_max, 
                             figsize = FIGSIZE_QSCAN, fsave = fsave/'snrQscan_coh_track.png',
                             cmaptype = cmaptype, pcolorbins = pcolorbins,
                             ylabel = flabel)
-    LOGGER.log(f'Coherent track significance: {signif_coh}\n')
     if nullSPEC is not None:
         logging.info('Null...')
         nullSPEC.plot_spectrum(times = tspec_plot, freqs = fspec_plot,
@@ -369,10 +368,9 @@ def main(argv = None):
                             ylabel = flabel,
                             xlim = tpeak_range_plot, ylim = frange)
         delay = spec.ifo_delay(max_ra, max_de, gps)
-        signif = spec.plot_spectrum_with_track(tmpl, gps_max + delay, 
+        spec.plot_spectrum_with_track(tmpl, gps_max + delay, 
                                 figsize = FIGSIZE_QSCAN, fsave = fsave/f'Qscan_{spec.ifo}_track.png',
                                 cmaptype = cmaptype, pcolorbins = pcolorbins,
                                 ylabel = flabel)
-        LOGGER.log(f'{spec.ifo} track significance: {signif}\n')
 
     return 0

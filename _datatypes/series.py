@@ -471,7 +471,6 @@ class TimeFreqSpectrum(MultiSeries):
         # Plot track evolution
         plt.savefig(fsave ,dpi = 200)
         plt.close()
-        return significance
 
 
     def calc_track_significance(self, tmpl, gps_trigger,
