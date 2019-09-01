@@ -387,7 +387,6 @@ def main(argv = None):
     plt.plot(freqs, traceSNR)
     plt.xlabel('frequency [Hz]')
     plt.ylabel('SNR')
-    plt.legend()
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
     LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
     LOGGER.info(f'Average background SNR = {np.average(backSNR_int)}\n')

@@ -493,7 +493,7 @@ class TimeFreqSpectrum(MultiSeries):
 
 
     def calc_trace(self, tmpl, gps_trigger,
-                back_collect_num = 100, thresh = 0.8, wide = 1):
+                back_collect_num = 100, thresh = 1.0, wide = 1):
         track_x, track_y = tmpl.track
         SNR_median = np.median(self._array)
         tlim_start, tlim_end = self.trange
