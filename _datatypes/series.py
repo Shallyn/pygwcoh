@@ -512,6 +512,7 @@ class TimeFreqSpectrum(MultiSeries):
         snrs = self._array[:,idx_gps_start:(idx_gps_trigger - idx_gps_wide)]
         indexes = np.where(snrs > thresh)[1]
         idx_recent = -100
+        print(len(indexes))
         for idx in indexes:
             if idx - idx_recent < 20:
                 idx_recent = idx
