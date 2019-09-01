@@ -192,6 +192,10 @@ class MultiSeries(object):
         else:
             self._deltax = None
             self._y = None
+    
+    @property
+    def array(self):
+        return self._array
 
     @property
     def y(self):
