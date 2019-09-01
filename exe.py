@@ -373,45 +373,11 @@ def main(argv = None):
                                 cmaptype = cmaptype, pcolorbins = pcolorbins,
                                 ylabel = flabel)
     logging.info('Calculating track significance...')
-    #traceSNR, backSNR = cohSPEC.calc_track_significance(tmpl, gps_max)
-    #traceSNR_int = np.average(traceSNR)
-    #plt.plot(traceSNR)
-    #plt.savefig(fsave/'traceSNR.png', dpi = 200)
-    #LOGGER.info(f'Trace SNR = {traceSNR}\n')
-    time_tps = [gps_max, gps_max]
-    ytmp = [0, 5]
-    timespec = cohSPEC.x + cohSPEC.epoch[-1]
-    plt.figure(figsize=(12, 24))
-    plt.subplot(611)
-    val = cohSPEC.array[5, :]
-    plt.plot(timespec, val)
-    plt.plot(time_tps, ytmp)
-    
-    plt.subplot(612)
-    val = cohSPEC.array[10, :]
-    plt.plot(timespec, val)
-    plt.plot(time_tps, ytmp)
-
-    plt.subplot(613)
-    val = cohSPEC.array[12, :]
-    plt.plot(timespec, val)
-    plt.plot(time_tps, ytmp)
-
-    plt.subplot(614)
-    val = cohSPEC.array[16, :]
-    plt.plot(timespec, val)
-    plt.plot(time_tps, ytmp)
-
-    plt.subplot(615)
-    val = cohSPEC.array[18, :]
-    plt.plot(timespec, val)
-    plt.plot(time_tps, ytmp)
-
-    plt.subplot(616)
-    val = cohSPEC.array[25, :]
-    plt.plot(timespec, val)
-    plt.plot(time_tps, ytmp)
-    plt.savefig(fsave/'traceSNR.png',dpi = 200)
+    traceSNR, backSNR = cohSPEC.calc_trace(tmpl, gps_max)
+    traceSNR_int = np.average(traceSNR)
+    plt.plot(traceSNR)
+    plt.savefig(fsave/'traceSNR.png', dpi = 200)
+    LOGGER.info(f'Trace SNR = {traceSNR}\n')
 
 
     return 0

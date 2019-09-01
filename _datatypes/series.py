@@ -478,19 +478,28 @@ class TimeFreqSpectrum(MultiSeries):
         plt.savefig(fsave ,dpi = 200)
         plt.close()
 
+    def calc_trace_val(self, track_x, track_y, max_search = 0.05):
+        ret = []
+        for i,freq in enumerate(self.frequencies):
+            if freq < track_y[0] or freq > track_y[-1]:
+                continue
+            gps = track_x[get_idx(track_y, freq)]
+            times = self.epoch[i] + self.x
+            idxes = np.where( np.abs(times - gps) < max_search )[0]
+            ret.append(np.max(self._array[i, idxes]))
+        return np.asarray(ret)
 
-    def calc_track_significance(self, tmpl, gps_trigger,
-                    back_collect_num = 100, thresh = 0.7, wide = 1):
+
+    def calc_trace(self, tmpl, gps_trigger,
+                back_collect_num = 100, thresh = 0.7, wide = 1):
         track_x, track_y = tmpl.track
         SNR_median = np.median(self._array)
         tlim_start, tlim_end = self.trange
-        # Get TraceSNR
-        idx_freq_max = get_idx(self.frequencies, track_y[-1])
-        idx_freq_min = get_idx(self.frequencies, track_y[0])
         # Get gps trigger index
         idx_gps_trigger = int( (gps_trigger - self.epoch[-1]) * self.fs )
         idx_gps_wide = int( wide * self.fs )
-        trigger_traceSNR = self._array[idx_freq_min:idx_freq_max, idx_gps_trigger]
+        re_track_x, re_track_y = track_wrapper(track_x, track_y, gps_trigger, tlim_start, tlim_end)
+        trigger_traceSNR = self.calc_trace_val(re_track_x, re_track_y)
         trigger_traceSNR_int = np.sum(trigger_traceSNR) / len(trigger_traceSNR)
         # Set threshold
         thresh = trigger_traceSNR_int * thresh
@@ -500,12 +509,16 @@ class TimeFreqSpectrum(MultiSeries):
             snrs = self._array[i,:(idx_gps_trigger - idx_gps_wide)]
             indexes = np.where( snrs > thresh )[0]
             for idx in indexes:
-                back_trackSNR = self._array[idx_freq_min:idx_freq_max, idx]
-                background.append(back_trackSNR.tolist())
+                this_gps = self.epoch[i] + self.x[idx]
+                re_track_x, re_track_y = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
+                if re_track_x is None:
+                    continue
+                back_trackSNR = self.calc_trace_val(re_track_x, re_track_y)
+                background.append(back_trackSNR
                 count += 1
                 if count > back_collect_num:
-                    return trigger_traceSNR, np.array(background)
-        return trigger_traceSNR, np.array(background)
+                    return trigger_traceSNR, background
+        return trigger_traceSNR, background
 
 
 def track_wrapper(track_x, track_y, gps, limit_start, limit_end):
@@ -514,7 +527,7 @@ def track_wrapper(track_x, track_y, gps, limit_start, limit_end):
     end = track_x[-1]
     deltax = track_x[1] - ini
     if ini > limit_end or end < limit_start:
-        return None
+        return None, None
     if ini < limit_start:
         idx_start = int((limit_start - ini) / deltax) + 1
     else:
