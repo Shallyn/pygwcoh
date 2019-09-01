@@ -508,7 +508,11 @@ class TimeFreqSpectrum(MultiSeries):
         for i, freq in enumerate(self.frequencies):
             snrs = self._array[i,:(idx_gps_trigger - idx_gps_wide)]
             indexes = np.where( snrs > thresh )[0]
+            idx_recent = -100
             for idx in indexes:
+                if idx - idx_recent < 5:
+                    continue
+                idx_recent = idx
                 this_gps = self.epoch[i] + self.x[idx]
                 re_track_x, re_track_y = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
                 if re_track_x is None:
