@@ -500,6 +500,8 @@ class TimeFreqSpectrum(MultiSeries):
         # Get gps trigger index
         idx_gps_trigger = int( (gps_trigger - self.epoch[-1]) * self.fs )
         idx_gps_wide = int( wide * self.fs )
+        idx_gps_start = int( (self.epoch[-1] - self.epoch[0]) * self.fs )
+        # Get track
         re_track_x, re_track_y = track_wrapper(track_x, track_y, gps_trigger, tlim_start, tlim_end)
         trigger_traceSNR, freqs = self.calc_trace_val(re_track_x, re_track_y)
         trigger_traceSNR_int = np.sum(trigger_traceSNR) / len(trigger_traceSNR)
@@ -508,7 +510,7 @@ class TimeFreqSpectrum(MultiSeries):
         background = []
         count = 0
         for i, freq in enumerate(self.frequencies):
-            snrs = self._array[i,:(idx_gps_trigger - idx_gps_wide)]
+            snrs = self._array[i,idx_gps_start:(idx_gps_trigger - idx_gps_wide)]
             indexes = np.where( snrs > thresh )[0]
             idx_recent = -100
             for idx in indexes:
