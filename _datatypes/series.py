@@ -514,7 +514,7 @@ class TimeFreqSpectrum(MultiSeries):
                 if re_track_x is None:
                     continue
                 back_trackSNR = self.calc_trace_val(re_track_x, re_track_y)
-                background.append(back_trackSNR
+                background.append(back_trackSNR)
                 count += 1
                 if count > back_collect_num:
                     return trigger_traceSNR, background
