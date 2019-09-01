@@ -380,8 +380,9 @@ def main(argv = None):
     count = 0
     for back in backSNR:
         if len(back) == len(traceSNR):
-            backtraceSNR += back
+            backtraceSNR = backtraceSNR + back
             count += 1
+            print(count)
         backSNR_int.append(np.average(back))
     backtraceSNR = backtraceSNR / count
     plt.plot(freqs, traceSNR, label = 'Track SNR')
