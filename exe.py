@@ -75,7 +75,7 @@ def parseargs(argv):
     parser.add_option('--graceid', type = 'str', help = 'GraceDB Event ID, if added, will load such Grace event parameters(Prefer).')
 
     # For data find
-    parser.add_option('--stepback', type = 'int', default = 20, help = 'Used for GraceDB data load.')
+    parser.add_option('--stepback', type = 'int', default = 30, help = 'Used for GraceDB data load.')
     parser.add_option('--stepforward', type = 'int', default = 5, help = 'Used for GraceDB data load.')
     
     # Specify detector
