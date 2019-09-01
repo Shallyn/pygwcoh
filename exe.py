@@ -383,6 +383,7 @@ def main(argv = None):
             backtraceSNR = backtraceSNR + back
             count += 1
             print(count)
+        print(len(back))
         backSNR_int.append(np.average(back))
     backtraceSNR = backtraceSNR / count
     plt.plot(freqs, traceSNR, label = 'Track SNR')
@@ -393,6 +394,6 @@ def main(argv = None):
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
     LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
     LOGGER.info(f'Background average SNR = {np.average(backSNR_int)}\n')
-
+    print(len(traceSNR))
 
     return 0
