@@ -524,7 +524,7 @@ class TimeFreqSpectrum(MultiSeries):
                 background.append(back_trackSNR)
                 count += 1
                 if count > back_collect_num:
-                    return trigger_traceSNR, background
+                    return trigger_traceSNR, freqs, background
         return trigger_traceSNR, freqs, background
 
 
