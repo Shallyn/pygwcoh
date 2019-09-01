@@ -475,35 +475,34 @@ class TimeFreqSpectrum(MultiSeries):
         plt.close()
 
 
-    def calc_track_significance(self, gps_trigger,
+    def calc_track_significance(self, tmpl, gps_trigger,
                     back_collect_num = 100, thresh = 0.7, wide = 1):
+        track_x, track_y = tmpl.track
         SNR_median = np.median(self._array)
         tlim_start, tlim_end = self.trange
-        # Get Track
-        trigger_traceSNR = self.calc_track_integration(gps_trigger)
-        trigger_traceSNR_int = np.sum(trigger_traceSNR) / len(trigger_traceSNR)
-        # Set threshold
-        thresh = trigger_traceSNR_int * thresh
         # Get gps trigger index
         idx_gps_trigger = int( (gps_trigger - self.epoch[-1]) * self.fs )
         idx_gps_wide = int( wide * self.fs )
+        # Get TraceSNR
+        idx_freq_max = get_idx(self.frequencies, trace_y[-1])
+        idx_freq_min = get_idx(self.frequencies, trace_y[0])
+        trigger_traceSNR = self._array[idx_freq_min:idx_freq_max, idx_gps_trigger]
+        trigger_traceSNR_int = np.sum(trigger_traceSNR) / len(trigger_traceSNR)
+        # Set threshold
+        thresh = trigger_traceSNR_int * thresh
         background = []
         count = 0
         for i, freq in enumerate(self.frequencies):
             snrs = self._array[i,:(idx_gps_trigger - idx_gps_wide)]
             indexes = np.where( snrs > thresh )[0]
             for idx in indexes:
-                this_gps = self.epoch[0] + idx * self.deltax
-                back_trackSNR = self.calc_track_integration(this_gps)
+                back_trackSNR = self._array[idx_freq_min:idx_freq_max, idx]
                 background.append(back_trackSNR.tolist())
                 count += 1
                 if count > back_collect_num:
                     return trigger_traceSNR, np.array(background)
         return trigger_traceSNR, np.array(background)
 
-    def calc_track_integration(self, gps):
-        idx = int( (gps - self.epoch[-1]) * self.fs)
-        return self._array[:, idx]
 
 def track_wrapper(track_x, track_y, gps, limit_start, limit_end):
     track_x = track_x + gps
@@ -529,6 +528,9 @@ def calc_track_integration(func, track_x, track_y):
     trace = func(track_x, track_y)[idx_trace, idx_trace]
     return trace
 
+def get_idx(arr, val):
+    delta = np.abs(arr - val)
+    return np.argmin(delta)
 
 def get_2D_argpeak(matrix):
     arg = np.where(matrix == np.max(matrix))

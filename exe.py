@@ -373,7 +373,7 @@ def main(argv = None):
                                 cmaptype = cmaptype, pcolorbins = pcolorbins,
                                 ylabel = flabel)
     logging.info('Calculating track significance...')
-    traceSNR, backSNR = cohSPEC.calc_track_significance(gps_max)
+    traceSNR, backSNR = cohSPEC.calc_track_significance(tmpl, gps_max)
     traceSNR_int = np.average(traceSNR)
     LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
     print(backSNR.shape)
