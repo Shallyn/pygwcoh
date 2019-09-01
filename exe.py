@@ -375,9 +375,13 @@ def main(argv = None):
     logging.info('Calculating track significance...')
     traceSNR, backSNR = cohSPEC.calc_trace(tmpl, gps_max)
     traceSNR_int = np.average(traceSNR)
+    backSNR_int = []
+    for back in backSNR:
+        backSNR_int.append(np.average(back))
     plt.plot(traceSNR)
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
     LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
+    LOGGER.info(f'Back SNR = {backSNR_int}\n')
 
 
     return 0
