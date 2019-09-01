@@ -512,7 +512,7 @@ class TimeFreqSpectrum(MultiSeries):
             indexes = np.where( snrs > thresh )[0]
             idx_recent = -100
             for idx in indexes:
-                if idx - idx_recent < 5:
+                if idx - idx_recent < 20:
                     idx_recent = idx
                     continue
                 idx_recent = idx
