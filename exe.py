@@ -373,15 +373,25 @@ def main(argv = None):
                                 cmaptype = cmaptype, pcolorbins = pcolorbins,
                                 ylabel = flabel)
     logging.info('Calculating track significance...')
-    traceSNR, backSNR = cohSPEC.calc_trace(tmpl, gps_max)
+    traceSNR, freqs, backSNR = cohSPEC.calc_trace(tmpl, gps_max)
     traceSNR_int = np.average(traceSNR)
     backSNR_int = []
+    backtraceSNR = np.zeros(len(traceSNR))
+    count = 0
     for back in backSNR:
+        if len(back) == len(traceSNR):
+            backtraceSNR += back
+            count += 1
         backSNR_int.append(np.average(back))
-    plt.plot(traceSNR)
+    backtraceSNR = backtraceSNR / count
+    plt.plot(freqs, traceSNR, label = 'Track SNR')
+    plt.plot(freqs, backtraceSNR, label = 'Background')
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('SNR')
+    plt.legend()
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
     LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
-    LOGGER.info(f'Back SNR = {backSNR_int}\n')
+    LOGGER.info(f'Background average SNR = {np.average(backSNR_int)}\n')
 
 
     return 0
