@@ -219,7 +219,7 @@ def main(argv = None):
                     duration = 20)
     logging.info(f'Get template, duration = {tmpl.dtpeak}')
     track_x, track_y = tmpl.track
-    trange_peak = [min(8/max(track_y), sback), min(8/max(track_y), sfwd)]
+    trange_peak = [min(20/max(track_y), sback), min(16/max(track_y), sfwd)]
     if sback < 2.1 * tmpl.duration:
         LOGGER.warning(f'Time duration of template is too long.\n')
         sback = 2.1 * tmpl.dtpeak
