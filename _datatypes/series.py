@@ -511,6 +511,7 @@ class TimeFreqSpectrum(MultiSeries):
             idx_recent = -100
             for idx in indexes:
                 if idx - idx_recent < 5:
+                    idx_recent = idx
                     continue
                 idx_recent = idx
                 this_gps = self.epoch[i] + self.x[idx]
