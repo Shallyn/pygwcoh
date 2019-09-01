@@ -378,7 +378,7 @@ def main(argv = None):
     #plt.plot(traceSNR)
     #plt.savefig(fsave/'traceSNR.png', dpi = 200)
     #LOGGER.info(f'Trace SNR = {traceSNR}\n')
-    time_gps = [gps_max, gps_max]
+    time_tps = [gps_max, gps_max]
     ytmp = [0, 5]
     timespec = cohSPEC.x + cohSPEC.epoch[-1]
     plt.figure(figsize=(12, 24))
