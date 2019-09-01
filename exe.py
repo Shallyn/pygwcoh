@@ -377,7 +377,7 @@ def main(argv = None):
     traceSNR_int = np.average(traceSNR)
     plt.plot(traceSNR)
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
-    LOGGER.info(f'Trace SNR = {traceSNR}\n')
+    LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
 
 
     return 0
