@@ -509,25 +509,23 @@ class TimeFreqSpectrum(MultiSeries):
         thresh = trigger_traceSNR_int * thresh
         background = []
         count = 0
-        for i, freq in enumerate(self.frequencies):
-            snrs = self._array[i,idx_gps_start:(idx_gps_trigger - idx_gps_wide)]
-            indexes = np.where( snrs > thresh )[0]
-            print(len(indexes))
-            idx_recent = -100
-            for idx in indexes:
-                if idx - idx_recent < 20:
-                    idx_recent = idx
-                    continue
+        snrs = self._array[:,idx_gps_start:(idx_gps_trigger - idx_gps_wide)]
+        indexes = np.where(snrs > thresh)[1]
+        idx_recent = -100
+        for idx in indexes:
+            if idx - idx_recent < 20:
                 idx_recent = idx
-                this_gps = self.epoch[i] + self.x[idx]
-                re_track_x, re_track_y = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
-                if re_track_x is None:
-                    continue
-                back_trackSNR = self.calc_trace_val(re_track_x, re_track_y)[0]
-                background.append(back_trackSNR)
-                count += 1
-                if count > back_collect_num:
-                    return trigger_traceSNR, freqs, background
+                continue
+            idx_recent = idx
+            this_gps = self.epoch[i] + self.x[idx]
+            re_track_x, re_track_y = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
+            if re_track_x is None:
+                continue
+            back_trackSNR = self.calc_trace_val(re_track_x, re_track_y)[0]
+            background.append(back_trackSNR)
+            count += 1
+            if count > back_collect_num:
+                return trigger_traceSNR, freqs, background
         return trigger_traceSNR, freqs, background
 
 
