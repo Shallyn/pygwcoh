@@ -518,6 +518,7 @@ class TimeFreqSpectrum(MultiSeries):
                 idx_recent = idx
                 this_gps = self.epoch[i] + self.x[idx]
                 re_track_x, re_track_y = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
+                print(len(re_track_y))
                 if re_track_x is None:
                     continue
                 back_trackSNR = self.calc_trace_val(re_track_x, re_track_y)[0]

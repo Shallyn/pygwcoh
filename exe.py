@@ -382,8 +382,6 @@ def main(argv = None):
         if len(back) == len(traceSNR):
             backtraceSNR = backtraceSNR + back
             count += 1
-            print(count)
-        print(len(back))
         backSNR_int.append(np.average(back))
     backtraceSNR = backtraceSNR / count
     plt.plot(freqs, traceSNR, label = 'Track SNR')
