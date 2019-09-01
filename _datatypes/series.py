@@ -480,12 +480,12 @@ class TimeFreqSpectrum(MultiSeries):
         track_x, track_y = tmpl.track
         SNR_median = np.median(self._array)
         tlim_start, tlim_end = self.trange
-        # Get gps trigger index
-        idx_gps_trigger = int( (gps_trigger - self.epoch[-1]) * self.fs )
-        idx_gps_wide = int( wide * self.fs )
         # Get TraceSNR
         idx_freq_max = get_idx(self.frequencies, track_y[-1])
         idx_freq_min = get_idx(self.frequencies, track_y[0])
+        # Get gps trigger index
+        idx_gps_trigger = int( (gps_trigger - self.epoch[-1]) * self.fs )
+        idx_gps_wide = int( wide * self.fs )
         trigger_traceSNR = self._array[idx_freq_min:idx_freq_max, idx_gps_trigger]
         trigger_traceSNR_int = np.sum(trigger_traceSNR) / len(trigger_traceSNR)
         # Set threshold
