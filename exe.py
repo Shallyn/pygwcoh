@@ -393,6 +393,7 @@ def main(argv = None):
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
     plt.close()
 
+    backSNR_int = np.asarray(backSNR_int)
     count_x = np.arange(len(backSNR_int))
     plt.figure(figsize = (8,4))
     plt.scatter(count_x, backSNR_int, 'x', color = 'gray',label = 'background')
