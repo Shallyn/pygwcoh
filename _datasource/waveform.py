@@ -165,8 +165,9 @@ class Template(TimeSeries):
         power_vec = psd(hfreq)
         ohf = 1*(htilde * htilde.conjugate() / power_vec).sum() * df
         sig2 = np.abs(ohf)
-        rhor = self.distance * np.sqrt(sig2)
-        return rhor
+        return np.sqrt(sig2)
+        # rhor = self.distance * np.sqrt(sig2)
+        # return rhor
     
     def iter_fftQPlane(self, q, duration, fs, frange = None, mismatch = None):
         if frange is None:

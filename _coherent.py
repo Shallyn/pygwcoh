@@ -50,25 +50,14 @@ class gwStrainCoherent(object):
 
     def make_injection(self, tmpl, gps, ra_inj, de_inj, snr_expected,
                         psi = 0, phic = 0):
-        C_noise = 0
-        H_corr = 0
-        C2H_corr = 0
-        df = self._fs / (self._data[0].size)
+        SNR = 0
         for strain in self:
-            stilde, hrtilde, hitilde, power_vec = \
-                strain.rfft_utils(tmpl, 'set', None, False)
-            corr_N = (stilde * hrtilde.conjugate() / power_vec).sum() * df
-            corr_N = np.abs(corr_N)
-            corr_H = (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
-            corr_H = np.abs(corr_H)
-            C_noise += corr_N
-            H_corr += corr_H
-            C2H_corr += (corr_N / np.sqrt(corr_H))**2
-        distance = -C_noise / H_corr + \
-            np.sqrt((C_noise / H_corr)**2 - (C2H_corr - snr_expected**2) / H_corr )
-        LOGGER.info(f'rescaled distance factor = {tmpl.distance * distance} Mpc\n')
+            Hhat = tmpl.get_horizon(strain.psdfun_set)
+            SNR += Hhat**2
+        rescaled =  snr_expected / np.sqrt(SNR)
+        LOGGER.info(f'rescaled distance factor = {tmpl.distance * rescaled} Mpc\n')
         for strain in self:
-            strain.make_injection(tmpl, gps, ra_inj, de_inj, distance, 
+            strain.make_injection(tmpl, gps, ra_inj, de_inj, rescaled, 
                         psi = psi, phic = phic)
                 
     def set_psd(self, refpsd):
