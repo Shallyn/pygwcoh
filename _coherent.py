@@ -50,11 +50,21 @@ class gwStrainCoherent(object):
 
     def make_injection(self, tmpl, gps, ra_inj, de_inj, snr_expected,
                         psi = 0, phic = 0):
-        SNR = 0
+        C_noise = 0
+        H_corr = 0
+        C2H_corr = 0
+        df = self._fs / (self._data[0].size)
         for strain in self:
-            horizon = tmpl.get_horizon(psd = strain.psdfun_set)
-            SNR += horizon**2
-        distance = np.sqrt(SNR) / snr_expected
+            stilde, hrtilde, hitilde, power_vec = \
+                strain.rfft_utils(tmpl, 'set', None, False)
+            corr_N = (stilde * hrtilde.conjugate() / power_vec).sum() * df
+            corr_N = corr_N.real
+            corr_H = (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
+            corr_H = corr_H.real
+            C_noise += corr_N
+            H_corr += corr_H
+            C2H_corr += (corr_N**2) / corr_H
+        distance = (-C_noise + np.sqrt(C_noise**2 - H_corr*(C2H_corr - snr_expected**2) )) / H_corr
         for strain in self:
             strain.make_injection(tmpl, gps, ra_inj, de_inj, distance, 
                         psi = psi, phic = phic)
