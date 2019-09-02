@@ -96,7 +96,7 @@ class gwStrain(TimeSeries):
         ar, delay = self.ifo_get_at_and_delay(ra, de, psi, gps)
         gps_inj = gps + delay
         wf = (distance / tmpl.distance) * tmpl.template * np.exp(1.j*phic)
-        signal = wf.real * ap[0] + wf.imag * ap[1]
+        signal = wf.real * ar[0] + wf.imag * ar[1]
         t_start = gps_inj - np.abs(wf).argmax() / tmpl.fs
         t_end = t_start + len(signal) / tmpl.fs
         if tmpl.fs != self.fs:
