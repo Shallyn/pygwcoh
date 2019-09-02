@@ -396,7 +396,7 @@ def main(argv = None):
     backSNR_int = np.asarray(backSNR_int)
     count_x = np.arange(len(backSNR_int))
     plt.figure(figsize = (8,4))
-    plt.scatter(count_x, backSNR_int, 'x', label = 'background')
+    plt.scatter(count_x, backSNR_int, marker = 'x', label = 'background')
     plt.scatter([len(backSNR_int)/2], [traceSNR_int], '.', label = 'foreground')
     plt.legend()
     plt.xticks([])
