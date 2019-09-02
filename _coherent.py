@@ -58,16 +58,15 @@ class gwStrainCoherent(object):
             stilde, hrtilde, hitilde, power_vec = \
                 strain.rfft_utils(tmpl, 'set', None, False)
             corr_N = (stilde * hrtilde.conjugate() / power_vec).sum() * df
-            corr_N = corr_N.real
+            corr_N = np.abs(corr_N)
             corr_H = (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
-            corr_H = corr_H.real
+            corr_H = np.abs(corr_H)
             C_noise += corr_N
             H_corr += corr_H
-            C2H_corr += (corr_N**2) / corr_H
-        print(C_noise)
-        print(H_corr)
-        print(C2H_corr)
-        distance = (-C_noise + np.sqrt(C_noise**2 - H_corr*(C2H_corr - snr_expected**2) )) / H_corr
+            C2H_corr += (corr_N / np.sqrt(corr_H))**2
+        distance = -C_noise / H_corr + \
+            np.sqrt(4*(C_noise / H_corr)**2 - (C2H_corr - snr_expected**2) / H_corr )
+        LOGGER.warning(f'distance = {distance}\n')
         for strain in self:
             strain.make_injection(tmpl, gps, ra_inj, de_inj, distance, 
                         psi = psi, phic = phic)
