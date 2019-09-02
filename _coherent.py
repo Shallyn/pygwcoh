@@ -55,7 +55,7 @@ class gwStrainCoherent(object):
             Hhat = tmpl.get_horizon(strain.psdfun_set)
             SNR += Hhat**2
         rescaled =  snr_expected / np.sqrt(SNR)
-        LOGGER.info(f'rescaled distance factor = {tmpl.distance * rescaled} Mpc\n')
+        LOGGER.info(f'rescaled distance factor = {tmpl.distance / rescaled} Mpc\n')
         for strain in self:
             strain.make_injection(tmpl, gps, ra_inj, de_inj, rescaled, 
                         psi = psi, phic = phic)
