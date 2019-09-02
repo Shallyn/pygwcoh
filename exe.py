@@ -98,6 +98,7 @@ def parseargs(argv):
     parser.add_option('--injection', action = 'store_true', help = 'If added, will make an injection')
     parser.add_option('--track', action = 'store_true', help = 'If added, will plot track.')
     parser.add_option('--dimless', action = 'store_true', help = 'If added, will use nature dimemsion unit for initial frequency.')
+    parser.add_option('--offplot', action = 'store_true', help = 'If added, will not plot figure')
 
     args = parser.parse_args(argv)
     return args
@@ -126,6 +127,8 @@ def main(argv = None):
     s2z = args.s2z
     fini = args.fini
     approx = args.approx
+
+    offplot = args.offplot
 
     if not args.H1 and not args.L1 and not args.V1:
         ifos = None
@@ -388,6 +391,17 @@ def main(argv = None):
     plt.xlabel('frequency [Hz]')
     plt.ylabel('SNR')
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
+    plt.close()
+
+    count_x = np.arange(len(backSNR_int))
+    plt.figure(figsize = (8,4))
+    plt.scatter(count_x, backSNR_int, 'x', color = 'gray', alpha = 0.5,label = 'background')
+    plt.scatter([len(backSNR_int)/2], [traceSNR_int], '.', color = 'red','foreground')
+    plt.legend()
+    plt.xticks([])
+    plt.ylabel('SNR')
+    plt.savefig(fsave/'significance.png', dpi = 200)
+    plt.close()
     LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
     LOGGER.info(f'Average background SNR = {np.average(backSNR_int)}\n')
 
