@@ -266,7 +266,7 @@ def main(argv = None):
             LOGGER.warning(f'You have not set gps-injection, now we set it to {gps}\n')
             gps_inj = gps
         logging.info(f'Making injection... expected snr = {snr_expected}')
-        Strains.make_injection(tmpl, gps_inj, ra_inj, de_inj, snr_expected)
+        Strains.make_injection(tmpl, gps_inj, ra, de, snr_expected)
 
     """
     Preparatory work complete
