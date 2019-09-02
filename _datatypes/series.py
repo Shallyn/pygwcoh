@@ -478,7 +478,7 @@ class TimeFreqSpectrum(MultiSeries):
         plt.savefig(fsave ,dpi = 200)
         plt.close()
 
-    def calc_trace_val(self, track_x, track_y, max_search = 0.05):
+    def calc_trace_val(self, track_x, track_y, max_search = 5):
         ret = []
         freqs = []
         for i,freq in enumerate(self.frequencies):
@@ -486,7 +486,7 @@ class TimeFreqSpectrum(MultiSeries):
                 continue
             gps = track_x[get_idx(track_y, freq)]
             times = self.epoch[i] + self.x
-            idxes = np.where( np.abs(times - gps) < max_search )[0]
+            idxes = np.where( np.abs(times - gps) < max_search/freq )[0]
             ret.append(np.max(self._array[i, idxes]))
             freqs.append(freq)
         return np.asarray(ret), np.asarray(freqs)
@@ -526,7 +526,7 @@ class TimeFreqSpectrum(MultiSeries):
 
         idx_recent = -100
         for idx in indexes:
-            if idx - idx_recent < 100:
+            if idx - idx_recent < 50:
                 idx_recent = idx
                 continue
             idx_recent = idx
