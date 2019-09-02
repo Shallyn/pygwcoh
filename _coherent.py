@@ -65,7 +65,7 @@ class gwStrainCoherent(object):
             H_corr += corr_H
             C2H_corr += (corr_N / np.sqrt(corr_H))**2
         distance = -C_noise / H_corr + \
-            np.sqrt(4*(C_noise / H_corr)**2 - (C2H_corr - snr_expected**2) / H_corr )
+            np.sqrt((C_noise / H_corr)**2 - (C2H_corr - snr_expected**2) / H_corr )
         LOGGER.info(f'rescaled distance factor = {tmpl.distance * distance} Mpc\n')
         for strain in self:
             strain.make_injection(tmpl, gps, ra_inj, de_inj, distance, 
