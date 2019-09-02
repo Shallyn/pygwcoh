@@ -513,9 +513,15 @@ class TimeFreqSpectrum(MultiSeries):
         indexes = np.where(snrs > thresh)[1]
         if len(indexes) < back_collect_num:
             while(1):
-                thresh = thresh * 0.9
+                thresh = thresh * 0.95
                 indexes = np.where(snrs > thresh)[1]
                 if len(indexes) >= back_collect_num:
+                    break
+        elif len(indexes) > 100*back_collect_num:
+            while(1):
+                thresh = thresh * 1.05
+                indexes = np.where(snrs > thresh)[1]
+                if len(indexes) <= 100*back_collect_num:
                     break
 
         idx_recent = -100
