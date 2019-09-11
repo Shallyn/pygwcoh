@@ -147,21 +147,38 @@ class gwStrainCoherent(object):
 
 
 
-    def make_injection(self, tmpl, gps, ra_inj, de_inj, snr_expected,
+    def make_injection(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected,
                         psi = 0, phic = 0):
         SNR2 = 0
-        hinj = tmpl.template
-        sfreq = np.fft.rfftfreq(hinj.size, 1./tmpl.fs)
-        df = sfreq[1] - sfreq[0]
+        hinj = tmpl_inj.template * np.exp(1.j*phic)
+        hmatch = tmpl.template
+        if len(hmatch) > len(hinj):
+            hinj, hmatch = cutinsert(hinj, h)
+        elif len(hmatch) < len(hinj):
+            hinj, hmatch = padinsert(hinj, h)
+        else:
+            hinj = hinj
+        ret = {}
+        hrtilde = np.fft.rfft(hmatch.real)
+        hitilde = np.fft.rfft(hmatch.imag)
+        hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
+        df = hfreq[1] - hfreq[0]
         ret = {}
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(sfreq)
-            snr = (stilde * stilde.conjugate() / power_vec).sum()*df
-            ret[strain.ifo] = np.sqrt(snr)
-            SNR2 += snr
+
+            sigmasq_r = 1 * (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
+            snr_r = 1 * (stilde * hrtilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_r))
+
+            sigmasq_i = 1 * (hitilde * hitilde.conjugate() / power_vec).sum() * df
+            snr_i = 1 * (stilde * hitilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_i))
+
+            snr2 = abs(snr_r)**2 + abs(snr_i)**2
+            ret[strain.ifo] = np.sqrt(snr2)
+            SNR2 += snr2
         rescaled =  snr_expected / np.sqrt(SNR2)
         LOGGER.info(f'rescal ed distance = {tmpl.distance / rescaled} Mpc\n')
         for strain in self:

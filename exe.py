@@ -363,8 +363,35 @@ def main(argv = None):
             psi = 0
         if phic is None:
             phic = 0
+        regeneration = False
+        if m1_inj is None:
+            m1_inj = m1_t
+        else:
+            regeneration = True
+        if m2_inj is None:
+            m2_inj = m2_t
+        else:
+            regeneration = True
+        if s1z_inj is None:
+            s1z_inj = s1z_t
+        else:
+            regeneration = True
+        if s2z_inj is None:
+            s2z_inj = s2z_t
+        else:
+            regeneration = True
+
+        if regeneration:
+            logging.info('Regenerating template for injection...')
+            if approx_inj is None:
+                approx_inj = get_proper_approx(m1_inj, m2_inj)
+            tmpl_inj = Template(m1 = m1_inj, m2 = m2_inj, s1z = s1z_inj, s2z = s2z_inj, 
+                                fini = fini_SI, approx = approx_inj, srate = fs,
+                                duration = None)
+        else:
+            tmpl_inj = tmpl
         logging.info(f'Making injection... expected coherent snr = {snr_expected}')
-        expected_snr_dict, rescaled = Strains.make_injection(tmpl, gps_inj, ra, de, snr_expected, psi = psi, phic = phic)
+        expected_snr_dict, rescaled = Strains.make_injection(tmpl_inj, tmpl, gps_inj, ra, de, snr_expected, psi = psi, phic = phic)
         logging.info(f'Injection done, expected SNR')
         for ifo in expected_snr_dict:
             sys.stderr.write(f'\t{ifo}: {expected_snr_dict[ifo]}\n')
