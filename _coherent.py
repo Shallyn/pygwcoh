@@ -158,8 +158,7 @@ class gwStrainCoherent(object):
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
-            power_vec = strain.psdfun_set_func(sfreq)
-            print(power_vec)
+            power_vec = strain.psdfun_set(sfreq)
             snr = (stilde * stilde.conjugate() / power_vec).sum()*df
             ret[strain.ifo] = np.sqrt(snr)
             SNR2 += snr
