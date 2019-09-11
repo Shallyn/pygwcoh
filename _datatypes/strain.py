@@ -77,6 +77,9 @@ class gwStrain(TimeSeries):
     def psdfun_set(self):
         return self._psdfun_set
 
+    def psdfun_set_func(self, freq):
+        return self._psdfun_set(freq)
+
     def psdfun(self):
         return get_psdfun(self.value, self.fs)
 
