@@ -172,8 +172,8 @@ class gwStrainCoherent(object):
         return ret, rescaled
                 
     def set_psd(self, refpsd):
-        print(refpsd)
         for strain in self:
+            print(strain.ifo in refpsd)
             if strain.ifo in refpsd:
                 strain.set_psd(refpsd[strain.ifo])
             else:
