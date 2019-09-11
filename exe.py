@@ -214,19 +214,19 @@ def main(argv = None):
         except:
             LOGGER.error('Cannot fetch GraceDB event....\n')
     
-    # Setting parameters
-    if m1 is None:
-        m1 = sngl.mass1
-    if m2 is None:
-        m2 = sngl.mass2
-    if s1z is None:
-        s1z = sngl.spin1z
-    if s2z is None:
-        s2z = sngl.spin2z
-    if gps is None:
-        gps = sngl.end_time
-    if ifos is None:
-        ifos = sngl.ifos
+        # Setting parameters
+        if m1 is None:
+            m1 = sngl.mass1
+        if m2 is None:
+            m2 = sngl.mass2
+        if s1z is None:
+            s1z = sngl.spin1z
+        if s2z is None:
+            s2z = sngl.spin2z
+        if gps is None:
+            gps = Gevt.end_time
+        if ifos is None:
+            ifos = Gevt.ifos
 
     """
     2. Checking parameters
