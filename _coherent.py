@@ -168,16 +168,12 @@ class gwStrainCoherent(object):
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
-
-            sigmasq_r = 1 * (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
-            snr_r = np.fft.irfft(1*stilde * hrtilde.conjugate() / power_vec) / np.sqrt(np.abs(sigmasq_r))
-            snr_r = snr_r[0]
-            sigmasq_i = 1 * (hitilde * hitilde.conjugate() / power_vec).sum() * df
-            snr_i = np.fft.irfft(1*stilde * hitilde.conjugate() / power_vec) / np.sqrt(np.abs(sigmasq_i))
-            snr_i = snr_i[0]
-            snr2 = snr_r**2 + snr_i**2
-            ret[strain.ifo] = np.sqrt(snr2)
-            SNR2 += snr2
+            snr_r = correlate_real(stilde, hrtilde, power_vec, df)
+            snr_i = correlate_real(stilde, hitilde, power_vec, df)
+            snr = snr_r + 1.j*snr_i
+            print(np.abs(snr).max())
+            ret[strain.ifo] = abs(snr[0])
+            SNR2 += abs(snr[0])**2
         rescaled =  snr_expected / np.sqrt(SNR2)
         LOGGER.info(f'rescaled distance = {tmpl_inj.distance / rescaled} Mpc\n')
         for strain in self:
