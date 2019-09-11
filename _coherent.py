@@ -64,7 +64,7 @@ class gwStrainCoherent(object):
         ret = {}
         hrtilde = np.fft.rfft(hmatch.real)
         hitilde = np.fft.rfft(hmatch.imag)
-        hfreq = np.fft.rfftfreq(hmatch.size, 1./self.fs)
+        hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
         df = hfreq[1] - hfreq[0]
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
@@ -106,7 +106,7 @@ class gwStrainCoherent(object):
         ret = {}
         hrtilde = np.fft.rfft(hmatch.real)
         hitilde = np.fft.rfft(hmatch.imag)
-        hfreq = np.fft.rfftfreq(hmatch.size, 1./self.fs)
+        hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
         df = hfreq[1] - hfreq[0]
         stilde_dict = {}
         power_vec_dict = {}
@@ -161,7 +161,7 @@ class gwStrainCoherent(object):
         ret = {}
         hrtilde = np.fft.rfft(hmatch.real)
         hitilde = np.fft.rfft(hmatch.imag)
-        hfreq = np.fft.rfftfreq(hmatch.size, 1./self.fs)
+        hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
         df = hfreq[1] - hfreq[0]
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
