@@ -81,7 +81,7 @@ class gwStrainCoherent(object):
             snr = snr_r**2 + snr_i**2
             ret[strain.ifo] = np.sqrt(snr)
             SNR2 += snr
-        rescaled =  snr_expected / np.sqrt(SNR)
+        rescaled =  snr_expected / np.sqrt(SNR2)
         for ifo in ret:
             ret[ifo] *= rescaled
         return ret, rescaled
