@@ -137,10 +137,10 @@ class gwStrainCoherent(object):
                 power_vec = power_vec_dict[strain.ifo]
                 stilde = stilde_dict[strain.ifo]
                 sigmasq_r = 1 * (hrwindowed * hrwindowed.conjugate() / power_vec).sum() * df
-                snr_r = 1 * np.fft.irfft(stilde * hrwindowed.conjugate() / power_vec).max() / np.sqrt(np.abs(sigmasq_r))
+                snr_r = 1 * (stilde * hrwindowed.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_r))
 
                 sigmasq_i = 1 * (hiwindowed * hiwindowed.conjugate() / power_vec).sum() * df
-                snr_i = 1 * np.fft.irfft(stilde * hiwindowed.conjugate() / power_vec).max() / np.sqrt(np.abs(sigmasq_i))
+                snr_i = 1 * (stilde * hiwindowed.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_i))
 
                 SNR2_total += snr_r**2 + snr_i**2
             ret_trackSNR.append(np.sqrt(SNR2_total))
