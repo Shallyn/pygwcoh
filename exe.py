@@ -327,8 +327,7 @@ def main(argv = None):
             psddict = get_refpsd_from_dir(refpsd, channel = channel)
         else:
             psddict = get_refpsd(refpsd)
-    logging.info('Setting psd')
-    Strains.set_psd(psddict)
+    
 
     """
     6. Loading data.
@@ -346,7 +345,8 @@ def main(argv = None):
     else:
         logging.info(f'Loading data {ifos}')
         Strains.load_data(cache = cache, ifos = ifos, channel = channel)
-
+    logging.info('Setting psd')
+    Strains.set_psd(psddict)
     # Shoule we make injection?
     if injection:
         # Checking ra, de
