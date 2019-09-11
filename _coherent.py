@@ -11,6 +11,7 @@ from ._core.utdk import calc_sngl_Gpc_and_shift
 from ._datatypes.strain import CreateEmptySpectrum
 from ._datatypes.series import TimeFreqSpectrum
 from ._utils import interp2d_complex, LOGGER
+from scipy import signal
 
 DEFAULT_SBACK = 0.5
 DEFAULT_SFWD = 0.5
@@ -148,7 +149,7 @@ class gwStrainCoherent(object):
 
 
     def make_injection(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected,
-                        psi = 0, phic = 0):
+                        psi = 0, phic = 0, window = True):
         SNR2 = 0
         hinj = tmpl_inj.template * np.exp(1.j*phic)
         hmatch = tmpl.template
@@ -158,16 +159,22 @@ class gwStrainCoherent(object):
             hinj, hmatch = padinsert(hinj, h)
         else:
             hinj = hinj
-        ret = {}
-        hrtilde = np.fft.rfft(hmatch.real)
-        hitilde = np.fft.rfft(hmatch.imag)
+        if window:
+            try:   
+                dwindow = signal.tukey(hinj.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
+            except: 
+                dwindow = signal.blackman(hinj.size)     
+        else:
+            dwindow = 1
+        hrtilde = np.fft.rfft(dwindow*hmatch.real)
+        hitilde = np.fft.rfft(dwindow*hmatch.imag)
         hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
         df = hfreq[1] - hfreq[0]
         ret = {}
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
             signal = at[0]*hinj.real + at[1]*hinj.imag
-            stilde = np.fft.rfft(signal)
+            stilde = np.fft.rfft(dwindow*signal)
             power_vec = strain.psdfun_set(hfreq)
 
             sigmasq_r = 1 * (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
