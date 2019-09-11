@@ -166,7 +166,6 @@ class gwStrainCoherent(object):
         ret = {}
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
-            print(at)
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
