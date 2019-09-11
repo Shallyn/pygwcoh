@@ -142,7 +142,7 @@ class gwStrainCoherent(object):
                 sigmasq_i = 1 * (hiwindowed * hiwindowed.conjugate() / power_vec).sum() * df
                 snr_i = 1 * (stilde * hiwindowed.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_i))
 
-                SNR2_total += snr_r**2 + snr_i**2
+                SNR2_total += snr_r.real**2 + snr_i.real**2
             ret_trackSNR.append(np.sqrt(SNR2_total))
         return frequencies, ret_trackSNR
 
