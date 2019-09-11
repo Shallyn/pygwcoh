@@ -11,7 +11,7 @@ from ._core.utdk import calc_sngl_Gpc_and_shift
 from ._datatypes.strain import CreateEmptySpectrum
 from ._datatypes.series import TimeFreqSpectrum
 from ._utils import interp2d_complex, LOGGER
-from scipy import signal
+from scipy import signal as scipysignal
 
 DEFAULT_SBACK = 0.5
 DEFAULT_SFWD = 0.5
@@ -161,9 +161,9 @@ class gwStrainCoherent(object):
             hinj = hinj
         if window:
             try:   
-                dwindow = signal.tukey(hinj.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
+                dwindow = scipysignal.tukey(hinj.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
             except: 
-                dwindow = signal.blackman(hinj.size)     
+                dwindow = scipysignal.blackman(hinj.size)     
         else:
             dwindow = 1
         hrtilde = np.fft.rfft(dwindow*hmatch.real)
