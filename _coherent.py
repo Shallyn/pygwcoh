@@ -175,6 +175,7 @@ class gwStrainCoherent(object):
         for strain in self:
             if strain.ifo in refpsd:
                 strain.set_psd(refpsd[strain.ifo])
+                print('setted')
             else:
                 LOGGER.warning(f'Cannot set psd for strain {strain.ifo}\n')
 
