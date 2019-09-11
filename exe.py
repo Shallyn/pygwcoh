@@ -397,7 +397,7 @@ def main(argv = None):
             sys.stderr.write(f'\t{ifo}: {expected_snr_dict[ifo]}\n')
         logging.info('Calculating expected track SNR')
         exp_freqs, exp_trackSNR = Strains.calc_expected_track_SNR(q = Q, tmpl_inj = tmpl_inj,
-                                        tmpl = tmpl, gps = gps, ra_inj = ra, de_inj = de 
+                                        tmpl = tmpl, gps = gps, ra_inj = ra, de_inj = de,
                                         rescaled = rescaled,
                                         psi = psi, phic = phic,
                                         frange = frange, mismatch = mismatch)
