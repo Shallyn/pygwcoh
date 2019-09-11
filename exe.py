@@ -521,9 +521,10 @@ def main(argv = None):
             count += 1
         backSNR_int.append(np.average(back))
     backtraceSNR = backtraceSNR / count
-    plt.plot(freqs, traceSNR)
+    plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
-        plt.plot(exp_freqs, exp_trackSNR)
+        plt.plot(exp_freqs, exp_trackSNR, label = 'expected')
+        plt.legend()
     plt.xlabel('frequency [Hz]')
     plt.ylabel('SNR')
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
