@@ -224,9 +224,9 @@ def main(argv = None):
     if s2z is None:
         s2z = sngl.spin2z
     if gps is None:
-        gps = Gevt.end_time
+        gps = sngl.end_time
     if ifos is None:
-        ifos = Gevt.ifos
+        ifos = sngl.ifos
 
     """
     2. Checking parameters
