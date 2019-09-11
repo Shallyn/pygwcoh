@@ -335,10 +335,9 @@ def main(argv = None):
         6.1 If gaussian was set, will generate gaussian noise.
             else, loading data from cache or manually.
         6.2 If injection was set, will make an injection.
-            6.2.1 Checking m1_inj, m2_inj, s1z_inj, s2z_inj, gps_inj
-            6.2.2 Checking ra, de, psi, phic
-            6.2.3 Calculating distance, using expected snr
-            6.2.4 Calculating expected SNR and trackSNR for each detector
+            6.2.1 Checking ra, de, psi, phic
+            6.2.2 Calculating distance, using expected snr
+            6.2.3 Calculating expected SNR and trackSNR for each detector
     """
     # Loading data & making noise
     if gaussian:
@@ -364,44 +363,13 @@ def main(argv = None):
             psi = 0
         if phic is None:
             phic = 0
-        regeneration = False
-        if m1_inj is not None and m1_inj != m1_t:
-            regeneration = True
-        else:
-            m1_inj = m1_t
-        
-        if m2_inj is not None and m2_inj != m2_t:
-            regeneration = True
-        else:
-            m2_inj = m2_t
-
-        if s1z_inj is not None and s1z_inj != s1z_t:
-            regenaration = True
-        else:
-            s1z_inj = s1z_t
-
-        if s2z_inj is not None and s2z_inj != s2z_t:
-            regeneration = True
-        else:
-            s2z_inj = s2z_t
-        
-        # Is regeneration needed!
-        if regeneration:
-            logging.info('Regenerating injection template')
-            if approx_inj is None:
-                approx_inj = get_proper_approx(m1_inj, m2_inj)
-            tmpl_inj = Template(m1 = m1_inj, m2 = m2_inj, s1z = s1z_inj, s2z = s2z_inj, 
-                    fini = 20, approx = approx_inj, srate = fs,
-                    duration = None)
-        else:
-            tmpl_inj = tmpl
         logging.info(f'Making injection... expected coherent snr = {snr_expected}')
-        expected_snr_dict, rescaled = Strains.make_injection(tmpl_inj, tmpl, gps_inj, ra, de, snr_expected, psi = psi, phic = phic)
+        expected_snr_dict, rescaled = Strains.make_injection(tmpl, gps_inj, ra, de, snr_expected, psi = psi, phic = phic)
         logging.info(f'Injection done, expected SNR')
         for ifo in expected_snr_dict:
             sys.stderr.write(f'\t{ifo}: {expected_snr_dict[ifo]}\n')
         logging.info('Calculating expected track SNR')
-        exp_freqs, exp_trackSNR = Strains.calc_expected_track_SNR(Q, tmpl_inj, tmpl, 
+        exp_freqs, exp_trackSNR = Strains.calc_expected_track_SNR(Q, tmpl, 
                                         gps, ra, de, rescaled = rescaled,
                                         psi = psi, phic = phic,
                                         frange = frange, mismatch = mismatch)

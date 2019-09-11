@@ -147,38 +147,25 @@ class gwStrainCoherent(object):
 
 
 
-    def make_injection(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected,
+    def make_injection(self, tmpl, gps, ra_inj, de_inj, snr_expected,
                         psi = 0, phic = 0):
         SNR2 = 0
-        hinj = tmpl_inj.template * np.exp(1.j*phic)
-        hmatch = tmpl.template
-        if len(hmatch) > len(hinj):
-            hinj, hmatch = cutinsert(hinj, h)
-        elif len(hmatch) < len(hinj):
-            hinj, hmatch = padinsert(hinj, h)
-        else:
-            hinj = hinj
-        ret = {}
-        hrtilde = np.fft.rfft(hmatch.real)
-        hitilde = np.fft.rfft(hmatch.imag)
-        hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
-        df = hfreq[1] - hfreq[0]
+        hinj = tmpl.template
+        sfreq = np.fft.rfftfreq(hinj.size, 1./tmpl.fs)
+        df = sfreq[1] - sfreq[0]
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
-            power_vec = strain.psdfun_set(hfreq)
-            snr_r = correlate_real(stilde, hrtilde, power_vec, df)
-            snr_i = correlate_real(stilde, hitilde, power_vec, df)
-            snr = snr_r + 1.j*snr_i
-            print(np.abs(snr).max())
-            ret[strain.ifo] = abs(snr[0])
-            SNR2 += abs(snr[0])**2
+            power_vec = strain.psdfun_set(sfreq)
+            snr = (np.power(np.abs(stilde),2) / power_vec).sum()*df
+            ret[strain.ifo] = np.sqrt(snr)
+            SNR2 += snr
         rescaled =  snr_expected / np.sqrt(SNR2)
-        LOGGER.info(f'rescaled distance = {tmpl_inj.distance / rescaled} Mpc\n')
+        LOGGER.info(f'rescaled distance = {tmpl.distance / rescaled} Mpc\n')
         for strain in self:
             ret[strain.ifo] *= rescaled
-            strain.make_injection(tmpl_inj, gps, ra_inj, de_inj, rescaled, 
+            strain.make_injection(tmpl, gps, ra_inj, de_inj, rescaled, 
                         psi = psi, phic = phic)
         return ret, rescaled
                 
