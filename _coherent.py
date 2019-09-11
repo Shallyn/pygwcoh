@@ -96,7 +96,7 @@ class gwStrainCoherent(object):
         frange = kwargs.pop('frange', None)
         mismatch = kwargs.pop('mismatch', None)
 
-        hinj = tmpl_inj.template.copy() * np.exp(1.j*phic)
+        hinj = rescaled * tmpl_inj.template.copy() * np.exp(1.j*phic)
         hmatch = tmpl.template.copy()
         if len(hmatch) > len(hinj):
             hinj, hmatch = cutinsert(hinj, hmatch)
@@ -113,7 +113,7 @@ class gwStrainCoherent(object):
         power_vec_dict = {}
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
-            signal = rescaled*(at[0]*hinj.real + at[1]*hinj.imag)
+            signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
 
@@ -140,7 +140,7 @@ class gwStrainCoherent(object):
                 snr_r = 1 * (stilde * hrwindowed.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_r))
 
                 sigmasq_i = 1 * (hiwindowed * hiwindowed.conjugate() / power_vec).sum() * df
-                snr_i = 1 * (stilde * hiwindowed.conjugate() / power_vec).sum() * df / np.sqrt(np.sqrt(sigmasq_i))
+                snr_i = 1 * (stilde * hiwindowed.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_i))
 
                 SNR2_total += snr_r**2 + snr_i**2
             ret_trackSNR.append(np.sqrt(SNR2_total))
