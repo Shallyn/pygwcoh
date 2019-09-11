@@ -153,6 +153,7 @@ class gwStrainCoherent(object):
         hinj = tmpl.template
         sfreq = np.fft.rfftfreq(hinj.size, 1./tmpl.fs)
         df = sfreq[1] - sfreq[0]
+        ret = {}
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
             signal = at[0]*hinj.real + at[1]*hinj.imag
