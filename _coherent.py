@@ -123,8 +123,8 @@ class gwStrainCoherent(object):
         frequencies = []
         ret_trackSNR = []
         for shift, qtile in tmpl.iter_fftQPlane(q = q, 
-                                                duration = self._duration,
-                                                fs = self._fs,
+                                                duration = tmpl_inj.duration,
+                                                fs = tmpl_inj.fs,
                                                 frange = frange,
                                                 mismatch = mismatch):
             freq = qtile.frequency
