@@ -178,7 +178,7 @@ class gwStrainCoherent(object):
             snr = snr_r**2 + snr_i**2
             ret[strain.ifo] = np.sqrt(snr)
             SNR2 += snr
-            print(snr)
+            print(np.sqrt(snr))
         rescaled =  snr_expected / np.sqrt(SNR2)
         LOGGER.info(f'rescaled distance = {tmpl_inj.distance / rescaled} Mpc\n')
         for strain in self:
