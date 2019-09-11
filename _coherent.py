@@ -176,7 +176,7 @@ class gwStrainCoherent(object):
             sigmasq_i = 1 * (hitilde * hitilde.conjugate() / power_vec).sum() * df
             snr_i = 1 * (stilde * hitilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_i))
 
-            snr2 = abs(snr_r) + abs(snr_i)
+            snr2 = snr_r.real**2 + snr_i.real**2
             ret[strain.ifo] = np.sqrt(snr2)
             print(np.sqrt(snr2))
             SNR2 += snr2
