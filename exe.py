@@ -132,7 +132,7 @@ def main(argv = None):
     args, empty = parseargs(argv)
 
     injection = args.injection
-    gps_inj = args.gps_injection
+    gps_inj = args.gps_inj
     ra = args.ra
     de = args.de
     m1_inj = args.m1_inj
