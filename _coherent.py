@@ -5,7 +5,7 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 
 import numpy as np
 from ._datasource import load_data_from_ifo, load_data_from_cache
-from ._core.filter import correlate_real
+from ._core.filter import correlate_real, padinsert, cutinsert
 from ._core.skymap import nside2npix, pix2ang, Skymap
 from ._core.utdk import calc_sngl_Gpc_and_shift
 from ._datatypes.strain import CreateEmptySpectrum
@@ -48,17 +48,143 @@ class gwStrainCoherent(object):
         if strain.epoch != self._epoch:
             self._epoch = strain.epoch
 
-    def make_injection(self, tmpl, gps, ra_inj, de_inj, snr_expected,
-                        psi = 0, phic = 0):
-        SNR = 0
+    def make_noise_from_psd(self):
+        pass
+
+    def calc_expected_snr(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected, psi = 0, phic = 0):
+        SNR2 = 0
+        hinj = tmpl_inj.template * np.exp(1.j*phic)
+        hmatch = tmpl.template
+        if len(hmatch) > len(hinj):
+            hinj, hmatch = cutinsert(hinj, h)
+        elif len(hmatch) < len(hinj):
+            hinj, hmatch = padinsert(hinj, h)
+        else:
+            hinj = hinj
+        ret = {}
+        hrtilde = np.fft.rfft(hmatch.real)
+        hitilde = np.fft.rfft(hmatch.imag)
+        hfreq = np.fft.rfftfreq(hmatch.size, 1./self.fs)
+        df = hfreq[1] - hfreq[0]
         for strain in self:
-            Hhat = tmpl.get_horizon(strain.psdfun_set)
-            SNR += Hhat**2
+            at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
+            signal = at[0]*hinj.real + at[1]*hinj.imag
+            stilde = np.fft.rfft(signal)
+            power_vec = strain.psdfun_set(hfreq)
+
+            sigmasq_r = 1 * (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
+            snr_r = 1 * (stilde * hrtilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_r))
+
+            sigmasq_i = 1 * (hitilde * hitilde.conjugate() / power_vec).sum() * df
+            snr_i = 1 * (stilde * hitilde.conjugate() / power_vec).sum() * df / np.sqrt(np.sqrt(sigmasq_i))
+
+            snr = snr_r**2 + snr_i**2
+            ret[strain.ifo] = np.sqrt(snr)
+            SNR2 += snr
         rescaled =  snr_expected / np.sqrt(SNR)
-        LOGGER.info(f'rescaled distance factor = {tmpl.distance / rescaled} Mpc\n')
+        for ifo in ret:
+            ret[ifo] *= rescaled
+        return ret, rescaled
+
+    def calc_expected_track_SNR(self, q, 
+                                tmpl_inj, tmpl, gps, 
+                                ra_inj, de_inj, 
+                                rescaled, 
+                                psi = 0, phic = 0,
+                                **kwargs):
+        frange = kwargs.pop('frange', None)
+        mismatch = kwargs.pop('mismatch', None)
+
+        hinj = tmpl_inj.template * np.exp(1.j*phic)
+        hmatch = tmpl.template
+        if len(hmatch) > len(hinj):
+            hinj, hmatch = cutinsert(hinj, h)
+        elif len(hmatch) < len(hinj):
+            hinj, hmatch = padinsert(hinj, h)
+        else:
+            hinj = hinj
+        ret = {}
+        hrtilde = np.fft.rfft(hmatch.real)
+        hitilde = np.fft.rfft(hmatch.imag)
+        hfreq = np.fft.rfftfreq(hmatch.size, 1./self.fs)
+        df = hfreq[1] - hfreq[0]
+        stilde_dict = {}
+        power_vec_dict = {}
         for strain in self:
-            strain.make_injection(tmpl, gps, ra_inj, de_inj, rescaled, 
+            at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
+            signal = rescaled*(at[0]*hinj.real + at[1]*hinj.imag)
+            stilde = np.fft.rfft(signal)
+            power_vec = strain.psdfun_set(hfreq)
+
+            stilde_dict[strain.ifo] = stilde
+            power_vec_dict[strain.ifo] = power_vec
+
+        frequencies = []
+        ret_trackSNR = []
+        for shift, qtile in tmpl.iter_fftQPlane(q = q, 
+                                                duration = self._duration,
+                                                fs = self._fs,
+                                                frange = frange,
+                                                mismatch = mismatch):
+            freq = qtile.frequency
+            qwindow = qtile.get_window()
+            frequencies.append(freq)
+            hrwindowed = hrtilde * qwindow
+            hiwindowed = hitilde * qwindow
+            SNR2_total = 0
+            for strain in self:
+                power_vec = power_vec_dict[strain.ifo]
+                stilde = stilde_dict[strain.ifo]
+                sigmasq_r = 1 * (hrwindowed * hrwindowed.conjugate() / power_vec).sum() * df
+                snr_r = 1 * (stilde * hrtilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_r))
+
+                sigmasq_i = 1 * (hiwindowed * hiwindowed.conjugate() / power_vec).sum() * df
+                snr_i = 1 * (stilde * hitilde.conjugate() / power_vec).sum() * df / np.sqrt(np.sqrt(sigmasq_i))
+
+                SNR2_total += snr_r**2 + snr_i**2
+            ret_trackSNR.append(np.sqrt(SNR2_total))
+        return frequencies, ret_trackSNR
+
+
+
+    def make_injection(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected,
+                        psi = 0, phic = 0):
+        SNR2 = 0
+        hinj = tmpl_inj.template * np.exp(1.j*phic)
+        hmatch = tmpl.template
+        if len(hmatch) > len(hinj):
+            hinj, hmatch = cutinsert(hinj, h)
+        elif len(hmatch) < len(hinj):
+            hinj, hmatch = padinsert(hinj, h)
+        else:
+            hinj = hinj
+        ret = {}
+        hrtilde = np.fft.rfft(hmatch.real)
+        hitilde = np.fft.rfft(hmatch.imag)
+        hfreq = np.fft.rfftfreq(hmatch.size, 1./self.fs)
+        df = hfreq[1] - hfreq[0]
+        for strain in self:
+            at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
+            signal = at[0]*hinj.real + at[1]*hinj.imag
+            stilde = np.fft.rfft(signal)
+            power_vec = strain.psdfun_set(hfreq)
+
+            sigmasq_r = 1 * (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
+            snr_r = 1 * (stilde * hrtilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_r))
+
+            sigmasq_i = 1 * (hitilde * hitilde.conjugate() / power_vec).sum() * df
+            snr_i = 1 * (stilde * hitilde.conjugate() / power_vec).sum() * df / np.sqrt(np.sqrt(sigmasq_i))
+
+            snr = snr_r**2 + snr_i**2
+            ret[strain.ifo] = np.sqrt(snr)
+            SNR2 += snr
+        rescaled =  snr_expected / np.sqrt(SNR)
+        LOGGER.info(f'rescaled distance factor = {tmpl_inj.distance / rescaled} Mpc\n')
+        for strain in self:
+            ret[strain.ifo] *= rescaled
+            strain.make_injection(tmpl_inj, gps, ra_inj, de_inj, rescaled, 
                         psi = psi, phic = phic)
+        return ret, rescaled
                 
     def set_psd(self, refpsd):
         for strain in self:
