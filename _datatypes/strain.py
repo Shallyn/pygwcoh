@@ -91,11 +91,11 @@ class gwStrain(TimeSeries):
         else:
             return self
     
-    def make_injection(self, tmpl, gps, ra, de, distance,
+    def make_injection(self, tmpl, gps, ra, de, rescaled,
                             psi = 0, phic = 0):
         ar, delay = self.ifo_get_at_and_delay(ra, de, psi, gps)
         gps_inj = gps + delay
-        wf = (distance) * tmpl.template * np.exp(1.j*phic)
+        wf = (rescaled) * tmpl.template * np.exp(1.j*phic)
         signal = wf.real * ar[0] + wf.imag * ar[1]
         t_start = gps_inj - np.abs(wf).argmax() / tmpl.fs
         t_end = t_start + len(signal) / tmpl.fs
