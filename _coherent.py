@@ -149,7 +149,7 @@ class gwStrainCoherent(object):
 
 
     def make_injection(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected,
-                        psi = 0, phic = 0, window = True):
+                        psi = 0, phic = 0):
         SNR2 = 0
         hinj = tmpl_inj.template * np.exp(1.j*phic)
         hmatch = tmpl.template
@@ -159,22 +159,15 @@ class gwStrainCoherent(object):
             hinj, hmatch = padinsert(hinj, h)
         else:
             hinj = hinj
-        if window:
-            try:   
-                dwindow = scipysignal.tukey(hinj.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
-            except: 
-                dwindow = scipysignal.blackman(hinj.size)     
-        else:
-            dwindow = 1
-        hrtilde = np.fft.rfft(dwindow*hmatch.real)
-        hitilde = np.fft.rfft(dwindow*hmatch.imag)
+        hrtilde = np.fft.rfft(hmatch.real)
+        hitilde = np.fft.rfft(hmatch.imag)
         hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
         df = hfreq[1] - hfreq[0]
         ret = {}
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
             signal = at[0]*hinj.real + at[1]*hinj.imag
-            stilde = np.fft.rfft(dwindow*signal)
+            stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
 
             sigmasq_r = 1 * (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
