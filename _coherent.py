@@ -96,12 +96,12 @@ class gwStrainCoherent(object):
         frange = kwargs.pop('frange', None)
         mismatch = kwargs.pop('mismatch', None)
 
-        hinj = tmpl_inj.template * np.exp(1.j*phic)
-        hmatch = tmpl.template
+        hinj = tmpl_inj.template.copy() * np.exp(1.j*phic)
+        hmatch = tmpl.template.copy()
         if len(hmatch) > len(hinj):
-            hinj, hmatch = cutinsert(hinj, h)
+            hinj, hmatch = cutinsert(hinj, hmatch)
         elif len(hmatch) < len(hinj):
-            hinj, hmatch = padinsert(hinj, h)
+            hinj, hmatch = padinsert(hinj, hmatch)
         else:
             hinj = hinj
         ret = {}
@@ -151,12 +151,12 @@ class gwStrainCoherent(object):
     def make_injection(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected,
                         psi = 0, phic = 0):
         SNR2 = 0
-        hinj = tmpl_inj.template * np.exp(1.j*phic)
-        hmatch = tmpl.template
+        hinj = tmpl_inj.template.copy() * np.exp(1.j*phic)
+        hmatch = tmpl.template.copy()
         if len(hmatch) > len(hinj):
-            hinj, hmatch = cutinsert(hinj, h)
+            hinj, hmatch = cutinsert(hinj, hmatch)
         elif len(hmatch) < len(hinj):
-            hinj, hmatch = padinsert(hinj, h)
+            hinj, hmatch = padinsert(hinj, hmatch)
         else:
             hinj = hinj
         hrtilde = np.fft.rfft(hmatch.real)
