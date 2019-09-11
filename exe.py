@@ -341,7 +341,7 @@ def main(argv = None):
     # Loading data & making noise
     if gaussian:
         logging.info(f'Making gaussian noise {ifos}')
-        Strains.make_noise_from_psd(ifos)
+        Strains.make_noise_from_psd(ifos, psddict)
     else:
         logging.info(f'Loading data {ifos}')
         Strains.load_data(cache = cache, ifos = ifos, channel = channel)

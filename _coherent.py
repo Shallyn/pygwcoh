@@ -166,6 +166,7 @@ class gwStrainCoherent(object):
         ret = {}
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
+            print(at)
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
@@ -179,7 +180,7 @@ class gwStrainCoherent(object):
             ret[strain.ifo] = np.sqrt(snr2)
             SNR2 += snr2
         rescaled =  snr_expected / np.sqrt(SNR2)
-        LOGGER.info(f'rescal ed distance = {tmpl.distance / rescaled} Mpc\n')
+        LOGGER.info(f'rescaled distance = {tmpl.distance / rescaled} Mpc\n')
         for strain in self:
             ret[strain.ifo] *= rescaled
             strain.make_injection(tmpl, gps, ra_inj, de_inj, rescaled, 
