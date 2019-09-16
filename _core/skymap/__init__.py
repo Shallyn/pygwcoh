@@ -34,6 +34,10 @@ class Skymap(object):
             null_snr2 = null.sum(axis=0) / utdk2.shape[0]
             self._null_snr_pix = np.sqrt(null_snr2)
     @property
+    def coh_snr(self):
+        return self._coh_snr
+    
+    @property
     def max_gps_time(self):
         idx = self._coh_snr.argmax()
         return self._geocent_times[idx]
