@@ -524,7 +524,7 @@ def main(argv = None):
             continue
         backSNRs, back_skymap = \
             backStrains.calc_coherent_snr_skymap(tmpl, nside, gps_back)
-        LOGGER.warning(f'{np.max(back_skymap.coh_snr)}\n')
+        LOGGER.warning(f'{np.max(backSNRs[0].value)}\n')
         max_ra_back, max_de_back = back_skymap.max_ra_de
         back_SPECs, back_cohSPEC, back_nullSPEC = \
             backStrains.calc_coherent_snr_qspectrum(tmpl, q = Q, 
