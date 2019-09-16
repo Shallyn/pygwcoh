@@ -439,7 +439,6 @@ def main(argv = None):
 
     gps_max = skymap.max_gps_time
     logging.info(f'Coherent SNR peak at geocent time {gps_max}, while gps input is {gps}')
-    return -1
     """
     Step.3 Qscan...
     """
