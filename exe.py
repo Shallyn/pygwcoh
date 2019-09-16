@@ -517,7 +517,7 @@ def main(argv = None):
     backSNR_int = []
     for i in range(iter_back):
         logging.info('Calculating background...')
-        gps_back = gps_max - (200 + np.random.random() * 50) * i
+        gps_back = gps_max# - (200 + np.random.random() * 50) * i
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
         if backStrains.broken:
