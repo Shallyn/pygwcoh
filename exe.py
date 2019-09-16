@@ -512,7 +512,24 @@ def main(argv = None):
     logging.info('Calculating track significance...')
     traceSNR, freqs, backSNR = cohSPEC.calc_trace(tmpl, gps_max)
     traceSNR_int = np.average(traceSNR)
+
+    iter_back = 10
     backSNR_int = []
+    for i in range(iter_back):
+        logging.info('Calculating background...')
+        gps_back = gps_max - 100*i - np.random.random() * 50
+        backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
+        backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
+        backSNRs, back_skymap = \
+            backStrains.calc_coherent_snr_skymap(tmpl, nside, gps_back)
+        max_ra_back, max_de_back = back_skymap.max_ra_de
+        back_SPECs, back_cohSPEC, back_nullSPEC = \
+            backStrains.calc_coherent_snr_qspectrum(tmpl, q = Q, 
+                    gps_trigger = gps_back, ra = max_ra_back, de = max_de_back, 
+                    trange = trange_duration,
+                    frange = frange)
+        backSNR_int += back_cohSPEC.calc_background_track(tmpl)
+
     backtraceSNR = np.zeros(len(traceSNR))
     count = 0
     for back in backSNR:
@@ -544,6 +561,8 @@ def main(argv = None):
     LOGGER.info(f'Average background SNR = {np.average(backSNR_int)}\n')
 
     return 0
+
+
 
 class plot_mode_parser(object):
     def __init__(self, plot_mode):

@@ -541,6 +541,52 @@ class TimeFreqSpectrum(MultiSeries):
                 return trigger_traceSNR, freqs, background
         return trigger_traceSNR, freqs, background
 
+    def calc_background_track(self, tmpl, back_collect_num = 250, wide = 1):
+        # Get track
+        track_x, track_y = tmpl.track
+        SNR_median = np.median(self._array)
+        SNR_max = np.max(self._array)
+        tlim_start, tlim_end = self.trange
+        # Set threshold
+        thresh = (SNR_max + SNR_median) / 2
+        background = []
+        count = 0
+        # Get gps trigger index
+        idx_gps_end = len(self.epoch) - int( wide * self.fs )
+        idx_gps_start = int( (self.epoch[-1] - self.epoch[0]) * self.fs )
+        snrs = self._array[:,idx_gps_start:idx_gps_end]
+        indexes = np.where(snrs > thresh)[1]
+        if len(indexes) < back_collect_num:
+            while(1):
+                thresh = thresh * 0.95
+                indexes = np.where(snrs > thresh)[1]
+                if len(indexes) >= back_collect_num:
+                    break
+        elif len(indexes) > 100*back_collect_num:
+            while(1):
+                thresh = thresh * 1.05
+                indexes = np.where(snrs > thresh)[1]
+                if len(indexes) <= 100*back_collect_num:
+                    break
+
+        idx_recent = -100
+        for idx in indexes:
+            if idx - idx_recent < 50:
+                idx_recent = idx
+                continue
+            idx_recent = idx
+            this_gps = self.epoch[-1] + self.x[idx]
+            re_track_x, re_track_y = track_wrapper(track_x, track_y, this_gps, tlim_start, tlim_end)
+            if re_track_x is None:
+                continue
+            back_trackSNR = self.calc_trace_val(re_track_x, re_track_y)[0]
+            background.append(np.average(back_trackSNR))
+            count += 1
+            if count > back_collect_num:
+                return background
+        return background
+
+
 
 def track_wrapper(track_x, track_y, gps, limit_start, limit_end):
     track_x = track_x + gps

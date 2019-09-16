@@ -29,8 +29,23 @@ def get_refpsd(refpsd):
             a, = elem.getElementsByTagName(ligolw.Array.tagName)
             # dims = a.getElementsByTagName(ligolw.Dim.tagName)
             # f0 = ligolw_param.get_param(elem, u"f0")
-            fpsd = interp1d(a.array[0], a.array[1])
+            fpsd = interp1d(a.array[0,:], a.array[1,:])
             retdict[str(ifo)] = fpsd
+    return retdict
+
+def get_refpsd_xml(xml):
+    retdict = dict()
+    xmldoc = ligolw_utils.load_filename(refpsd, contenthandler = PSDContentHandler, verbose = True)
+    root_name = u"psd"
+    xmldoc, = (elem for elem in xmldoc.getElementsByTagName(ligolw.LIGO_LW.tagName) if elem.hasAttribute(u"Name") and elem.Name == root_name)
+    for elem in xmldoc.getElementsByTagName(ligolw.LIGO_LW.tagName):
+        if elem.hasAttribute(u"Name") and elem.Name == u"REAL8FrequencySeries":
+            ifo = ligolw_param.get_pyvalue(elem, u"instrument")
+            # t, = elem.getElementsByTagName(ligolw.Time.tagName)
+            a, = elem.getElementsByTagName(ligolw.Array.tagName)
+            # dims = a.getElementsByTagName(ligolw.Dim.tagName)
+            # f0 = ligolw_param.get_param(elem, u"f0")
+            retdict[str(ifo)] = a.array
     return retdict
 
 def get_refpsd_from_dir(fdir, channel = 'CALIB'):
