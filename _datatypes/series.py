@@ -546,7 +546,6 @@ class TimeFreqSpectrum(MultiSeries):
         track_x, track_y = tmpl.track
         SNR_median = np.median(self._array)
         SNR_max = np.max(self._array)
-        LOGGER.warning(f'{SNR_max}\n')
         tlim_start, tlim_end = self.trange
         # Set threshold
         thresh = (SNR_max + SNR_median) / 2
