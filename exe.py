@@ -213,6 +213,7 @@ def main(argv = None):
             sngl = Gevt.get_sngl(Gevt.ifos[0])
         except:
             LOGGER.error('Cannot fetch GraceDB event....\n')
+            return -1
     
         # Setting parameters
         if m1 is None:
