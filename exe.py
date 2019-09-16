@@ -520,6 +520,8 @@ def main(argv = None):
         gps_back = gps_max - 100*i - np.random.random() * 50
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
+        if backStrains.broken:
+            continue
         backSNRs, back_skymap = \
             backStrains.calc_coherent_snr_skymap(tmpl, nside, gps_back)
         max_ra_back, max_de_back = back_skymap.max_ra_de

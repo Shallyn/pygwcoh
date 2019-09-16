@@ -49,6 +49,13 @@ class gwStrainCoherent(object):
         if strain.epoch != self._epoch:
             self._epoch = strain.epoch
 
+    @property
+    def broken(self):
+        if len(self) < 2:
+            return True
+        else:
+            return False
+
     def make_noise_from_psd(self):
         pass
 
