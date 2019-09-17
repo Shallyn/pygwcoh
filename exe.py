@@ -517,14 +517,17 @@ def main(argv = None):
     backSNR_int = []
     for i in range(iter_back):
         logging.info('Calculating background...')
-        gps_back = gps_max# - (200 + np.random.random() * 50) * i
+        gps_back = gps_max - (200 + np.random.random() * 50) * i
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
         backStrains.set_psd(psddict)
+        backSNRs, backskymap = \
+            backStrains.calc_coherent_snr_skymap(tmpl, nside, gps_back)
         if backStrains.broken:
             continue
-        max_ra_back = np.random.rand()*2*np.pi - np.pi
-        max_de_back = np.random.rand()*np.pi - np.pi/2
+        #max_ra_back = np.random.rand()*2*np.pi - np.pi
+        #max_de_back = np.random.rand()*np.pi - np.pi/2
+        max_ra_back,max_de_back = backskymap.max_ra_de
         back_SPECs, back_cohSPEC, back_nullSPEC = \
             backStrains.calc_coherent_snr_qspectrum(tmpl, q = Q, 
                     gps_trigger = gps_back, ra = max_ra_back, de = max_de_back, 
