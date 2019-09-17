@@ -550,6 +550,9 @@ def main(argv = None):
     backSNR_int = np.asarray(backSNR_int)
     back_avg = np.average(backSNR_int)
     back_med = np.median(backSNR_int)
+    LOGGER.warning(f'average: {back_avg}\n')
+    LOGGER.warning(f'median: {back_med}\n')
+    LOGGER.warning(f'minimal: {np.min(backSNR_int)}\n')
     plt.figure(figsize = (8,4))
     n, bins, patches = \
         plt.hist(x = backSNR_int, bins = 'auto', normed = True, 
