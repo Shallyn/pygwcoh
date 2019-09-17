@@ -120,6 +120,7 @@ def parseargs(argv):
     parser.add_option('--dimless', action = 'store_true', help = 'If added, will use nature dimemsion unit for initial frequency.')
     parser.add_option('--gaussian', action = 'store_true', help = 'If added, will generate gaussian noise using given psd.')
     parser.add_option('--plot-mode', type = 'str', default = 'all', help = 'Option for plot setting [all]')
+    parser.add_option('--background-collect', type = 'int', default = 50, help = 'Used for background collection.')
 
     args = parser.parse_args(argv)
     return args
@@ -192,6 +193,7 @@ def main(argv = None):
     track = args.track
     dimless = args.dimless
     plot_mode = plot_mode_parser(args.plot_mode)
+    iter_back = args.background_collect
 
     # Handlings...
     """
@@ -513,11 +515,10 @@ def main(argv = None):
     traceSNR, freqs, backSNR = cohSPEC.calc_trace(tmpl, gps_max)
     traceSNR_int = np.average(traceSNR)
 
-    iter_back = 10
     backSNR_int = []
     for i in range(iter_back):
         logging.info('Calculating background...')
-        gps_back = gps_max - (200 + np.random.random() * 50) * i
+        gps_back = gps_max - (500 + np.random.random() * 50) * i
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
         backStrains.set_psd(psddict)
