@@ -540,7 +540,7 @@ def main(argv = None):
             tmp = back_cohSPEC.calc_background_track(tmpl)
         except:
             continue
-        if np.nan in tmp or max(tmp) > 1000*traceSNR_int:
+        if np.nan in tmp or max(tmp) > 20*traceSNR_int:
             continue
         backSNR_int += tmp
 
