@@ -536,7 +536,13 @@ def main(argv = None):
                     gps_trigger = gps_back, ra = max_ra_back, de = max_de_back, 
                     trange = trange_duration,
                     frange = frange)
-        backSNR_int += back_cohSPEC.calc_background_track(tmpl)
+        try:
+            tmp = back_cohSPEC.calc_background_track(tmpl)
+        except:
+            continue
+        if np.nan in tmp:
+            continue
+        backSNR_int += tmp
 
     plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
