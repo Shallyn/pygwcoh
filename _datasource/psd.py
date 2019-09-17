@@ -48,7 +48,7 @@ def get_refpsd_xml(xml):
             retdict[str(ifo)] = a.array
     return retdict
 
-def get_refpsd_from_dir(fdir, channel = 'CALIB'):
+def get_refpsd_from_dir(fdir, channel = 'CALIB', ret_func = True):
     fdir = Path(fdir)
     fout = []
     for file in fdir.iterdir():

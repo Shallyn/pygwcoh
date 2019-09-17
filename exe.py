@@ -516,10 +516,12 @@ def main(argv = None):
     traceSNR_int = np.average(traceSNR)
 
     backSNR_int = []
+    Time_Total = sback+sfwd
     for i in range(iter_back):
         logging.info('Calculating background...')
         gps_back = gps_max - (500 + np.random.random() * 50) * i
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
+        Time_total += sback+sfwd
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
         backStrains.set_psd(psddict)
         backSNRs, backskymap = \
@@ -536,14 +538,6 @@ def main(argv = None):
                     frange = frange)
         backSNR_int += back_cohSPEC.calc_background_track(tmpl)
 
-    backtraceSNR = np.zeros(len(traceSNR))
-    count = 0
-    for back in backSNR:
-        if len(back) == len(traceSNR):
-            backtraceSNR = backtraceSNR + back
-            count += 1
-        backSNR_int.append(np.average(back))
-    backtraceSNR = backtraceSNR / count
     plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
         plt.plot(exp_freqs, exp_trackSNR, label = 'expected')
@@ -554,17 +548,18 @@ def main(argv = None):
     plt.close()
 
     backSNR_int = np.asarray(backSNR_int)
-    count_x = np.arange(len(backSNR_int))
+    back_avg = np.average(backSNR_int)
+    back_med = np.median(backSNR_int)
     plt.figure(figsize = (8,4))
-    plt.scatter(count_x, backSNR_int, marker = 'x', color = 'gray', label = 'background')
-    plt.scatter([len(backSNR_int)/2], [traceSNR_int], marker = '.', color = 'red',label = 'foreground')
+    n, bins, patches = \
+        plt.hist(x = backSNR_int, bins = 'auto', normed = True, 
+                color = 'gray', alpha = 0.7, 
+                label = 'background')
+    plt.plot([traceSNR_int, traceSNR_int], [0, 1], '--', color = 'red', alpha = 0.5, label = 'foreground')
     plt.legend()
-    plt.xticks([])
-    plt.ylabel('SNR')
+    plt.xlabel('trace SNR')
     plt.savefig(fsave/'significance.png', dpi = 200)
     plt.close()
-    LOGGER.info(f'Trace SNR = {traceSNR_int}\n')
-    LOGGER.info(f'Average background SNR = {np.average(backSNR_int)}\n')
 
     return 0
 

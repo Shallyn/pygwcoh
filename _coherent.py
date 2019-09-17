@@ -5,10 +5,11 @@ Writer: Shallyn(shallyn.liu@foxmail.com)
 
 import numpy as np
 from ._datasource import load_data_from_ifo, load_data_from_cache
+from ._datasource.noise import sim_gaussian_from_psd
 from ._core.filter import correlate_real, padinsert, cutinsert
 from ._core.skymap import nside2npix, pix2ang, Skymap
 from ._core.utdk import calc_sngl_Gpc_and_shift
-from ._datatypes.strain import CreateEmptySpectrum
+from ._datatypes.strain import CreateEmptySpectrum, gwStrain
 from ._datatypes.series import TimeFreqSpectrum
 from ._utils import interp2d_complex, LOGGER
 from scipy import signal as scipysignal
@@ -56,8 +57,14 @@ class gwStrainCoherent(object):
         else:
             return False
 
-    def make_noise_from_psd(self):
-        pass
+    def make_noise_from_psd(self, ifos, psddict):
+        for ifo in ifos:
+            funcpsd = psddict[ifo]
+            length = int(30 * self._fs)
+            freq = np.fft.rfftfreq(length, 1./self._fs)
+            psd = funcpsd(freq)
+            value = sim_gaussian_from_psd(freq, psd, self._fs, int(self._duration * self._fs))
+            self._data.append(gwStrain(value, self._epoch, ifo, self._fs, info = f'Fake_{ifo} strain'))
 
     def calc_expected_snr(self, tmpl_inj, tmpl, gps, ra_inj, de_inj, snr_expected, psi = 0, phic = 0):
         SNR2 = 0
