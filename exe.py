@@ -516,7 +516,7 @@ def main(argv = None):
     traceSNR_int = np.average(traceSNR)
 
     backSNR_int = []
-    Time_Total = sback+sfwd
+    Time_total = sback+sfwd
     for i in range(iter_back):
         logging.info('Calculating background...')
         gps_back = gps_max - (500 + np.random.random() * 50) * i
