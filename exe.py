@@ -543,12 +543,13 @@ def main(argv = None):
         if np.nan in tmp or np.average(tmp) > 5*traceSNR_int:
             continue
         backSNR_int += tmp
-    FAR = len(np.where(backSNR_int > traceSNR)[0]) / Time_total / len(backSNR_int)
+    FAR = len(np.where(backSNR_int > traceSNR_int)[0]) / Time_total / len(backSNR_int)
 
     plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
         plt.plot(exp_freqs, exp_trackSNR, label = 'expected')
         plt.legend()
+    plt.title(f'FAR = {FAR}')
     plt.xlabel('frequency [Hz]')
     plt.ylabel('SNR')
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
