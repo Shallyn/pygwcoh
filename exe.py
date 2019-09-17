@@ -523,7 +523,6 @@ def main(argv = None):
         backStrains.set_psd(psddict)
         if backStrains.broken:
             continue
-        LOGGER.warning(f'{np.max(np.abs(backSNRs[0].value))}\n')
         max_ra_back = np.random.rand()*2*np.pi - np.pi
         max_de_back = np.random.rand()*np.pi - np.pi/2
         back_SPECs, back_cohSPEC, back_nullSPEC = \
