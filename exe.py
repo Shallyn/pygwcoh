@@ -543,6 +543,7 @@ def main(argv = None):
         if np.nan in tmp or np.average(tmp) > 5*traceSNR_int:
             continue
         backSNR_int += tmp
+    FAR = len(np.where(backSNR_int > traceSNR)[0]) / Time_total / len(backSNR_int)
 
     plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
