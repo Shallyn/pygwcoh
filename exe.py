@@ -377,7 +377,7 @@ def main(argv = None):
             s1z_inj = s1z_t
         else:
             regeneration = True
-        if s2z_inj is None:
+        if s2z_inj is None: 
             s2z_inj = s2z_t
         else:
             regeneration = True
@@ -520,12 +520,12 @@ def main(argv = None):
         gps_back = gps_max# - (200 + np.random.random() * 50) * i
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
+        backStrains.set_psd(psddict)
         if backStrains.broken:
             continue
-        backSNRs, back_skymap = \
-            backStrains.calc_coherent_snr_skymap(tmpl, nside, gps_back)
         LOGGER.warning(f'{np.max(np.abs(backSNRs[0].value))}\n')
-        max_ra_back, max_de_back = back_skymap.max_ra_de
+        max_ra_back = np.random.rand()*2*np.pi - np.pi
+        max_de_back = np.random.rand()*np.pi - np.pi/2
         back_SPECs, back_cohSPEC, back_nullSPEC = \
             backStrains.calc_coherent_snr_qspectrum(tmpl, q = Q, 
                     gps_trigger = gps_back, ra = max_ra_back, de = max_de_back, 
