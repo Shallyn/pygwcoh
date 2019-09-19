@@ -561,7 +561,7 @@ def main(argv = None):
     back_avg = np.average(backSNR_int)
     back_med = np.median(backSNR_int)
     plt.figure(figsize = (8,4))
-    n, bins, patches = \
+    bins, n, patches = \
         plt.hist(x = backSNR_int, bins = 'auto', normed = True, 
                 color = 'gray', alpha = 0.7, 
                 label = 'background')
