@@ -120,7 +120,7 @@ def parseargs(argv):
     parser.add_option('--dimless', action = 'store_true', help = 'If added, will use nature dimemsion unit for initial frequency.')
     parser.add_option('--gaussian', action = 'store_true', help = 'If added, will generate gaussian noise using given psd.')
     parser.add_option('--plot-mode', type = 'str', default = 'all', help = 'Option for plot setting [all]')
-    parser.add_option('--background-collect', type = 'int', default = 20, help = 'Used for background collection.')
+    parser.add_option('--background-collect', type = 'int', default = 50, help = 'Used for background collection.')
 
     args = parser.parse_args(argv)
     return args
@@ -524,7 +524,6 @@ def main(argv = None):
         logging.info('Calculating background...')
         gps_back = gps_max - (500 + np.random.random() * 50) * counter
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
-        Time_total += sback+sfwd
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
         backStrains.set_psd(psddict)
         backSNRs, backskymap = \
@@ -547,6 +546,7 @@ def main(argv = None):
             continue
         backSNR_int += tmp
         index += 1
+        Time_total += sback + sfwd
 
     plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
