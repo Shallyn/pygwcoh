@@ -547,7 +547,6 @@ def main(argv = None):
             continue
         backSNR_int += tmp
         index += 1
-    FAR = len(np.where(backSNR_int > traceSNR_int)[0]) / Time_total / len(backSNR_int)
 
     plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
@@ -567,8 +566,19 @@ def main(argv = None):
         plt.hist(x = backSNR_int, bins = 'auto', normed = True, 
                 color = 'gray', alpha = 0.7, 
                 label = 'background')
-    LOGGER.warning(f'{n}\n')
-    LOGGER.warning(f'{bins}\n')
+    # Estimating FAR
+    idx_mu = np.where(bins == max(bins))[0][0]
+    Pmu = max(bins)
+    Xmu = n[idx_mu]
+    delta = np.abs(bins[idx_mu:] - Pmu*np.exp(-0.5))
+    idx_sigma = np.where( delta == np.min(delta) )[0][0]
+    sigma = n[idx_sigma]
+
+    FAP = np.exp(- np.power((traceSNR_int - Xmu) / sigma,2) / 2 ) / np.sqrt(2*np.pi) / sigma
+    FAR = FAP / Time_total
+    LOGGER.warning(f'FAP: {FAP}\n')
+    LOGGER.warning(f'FAR: {FAR}\n')
+
     plt.plot([traceSNR_int, traceSNR_int], [0, 1], '--', color = 'red', alpha = 0.5, label = 'foreground')
     plt.legend()
     plt.xlabel('trace SNR')
