@@ -552,7 +552,6 @@ def main(argv = None):
     if injection:
         plt.plot(exp_freqs, exp_trackSNR, label = 'expected')
         plt.legend()
-    plt.title(f'FAR = {FAR}')
     plt.xlabel('frequency [Hz]')
     plt.ylabel('SNR')
     plt.savefig(fsave/'traceSNR.png', dpi = 200)
@@ -580,6 +579,7 @@ def main(argv = None):
     LOGGER.warning(f'FAR: {FAR}\n')
 
     plt.plot([traceSNR_int, traceSNR_int], [0, 1], '--', color = 'red', alpha = 0.5, label = 'foreground')
+    plt.title(f'FAR = {FAR}')
     plt.legend()
     plt.xlabel('trace SNR')
     plt.savefig(fsave/'significance.png', dpi = 200)
