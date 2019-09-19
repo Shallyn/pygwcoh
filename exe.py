@@ -558,14 +558,13 @@ def main(argv = None):
     backSNR_int = np.asarray(backSNR_int)
     back_avg = np.average(backSNR_int)
     back_med = np.median(backSNR_int)
-    LOGGER.warning(f'average: {back_avg}\n')
-    LOGGER.warning(f'median: {back_med}\n')
-    LOGGER.warning(f'minimal: {np.min(backSNR_int)}\n')
     plt.figure(figsize = (8,4))
     n, bins, patches = \
         plt.hist(x = backSNR_int, bins = 'auto', normed = True, 
                 color = 'gray', alpha = 0.7, 
                 label = 'background')
+    LOGGER.warning(f'{n}\n')
+    LOGGER.warning(f'{bins}\n')
     plt.plot([traceSNR_int, traceSNR_int], [0, 1], '--', color = 'red', alpha = 0.5, label = 'foreground')
     plt.legend()
     plt.xlabel('trace SNR')
