@@ -120,7 +120,7 @@ def parseargs(argv):
     parser.add_option('--dimless', action = 'store_true', help = 'If added, will use nature dimemsion unit for initial frequency.')
     parser.add_option('--gaussian', action = 'store_true', help = 'If added, will generate gaussian noise using given psd.')
     parser.add_option('--plot-mode', type = 'str', default = 'all', help = 'Option for plot setting [all]')
-    parser.add_option('--background-collect', type = 'int', default = 50, help = 'Used for background collection.')
+    parser.add_option('--background-collect', type = 'int', default = 20, help = 'Used for background collection.')
 
     args = parser.parse_args(argv)
     return args
