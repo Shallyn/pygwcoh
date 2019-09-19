@@ -517,9 +517,12 @@ def main(argv = None):
 
     backSNR_int = []
     Time_total = sback+sfwd
-    for i in range(iter_back):
+    index = 0
+    counter = 0
+    while (index < iter_back):
+        counter += 1
         logging.info('Calculating background...')
-        gps_back = gps_max - (500 + np.random.random() * 50) * i
+        gps_back = gps_max - (500 + np.random.random() * 50) * counter
         backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
         Time_total += sback+sfwd
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
@@ -536,13 +539,14 @@ def main(argv = None):
                     gps_trigger = gps_back, ra = max_ra_back, de = max_de_back, 
                     trange = trange_duration,
                     frange = frange)
+        if np.average(back_cohSPEC.array) > 10*traceSNR_int:
+            continue
         try:
             tmp = back_cohSPEC.calc_background_track(tmpl)
         except:
             continue
-        if np.nan in tmp or np.average(tmp) > 5*traceSNR_int:
-            continue
         backSNR_int += tmp
+        index += 1
     FAR = len(np.where(backSNR_int > traceSNR_int)[0]) / Time_total / len(backSNR_int)
 
     plt.plot(freqs, traceSNR, label = 'trace')
