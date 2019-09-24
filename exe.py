@@ -348,9 +348,8 @@ def main(argv = None):
     else:
         logging.info(f'Loading data {ifos}')
         Strains.load_data(cache = cache, ifos = ifos, channel = channel)
-    logging.info('Setting psd')
+    logging.info('Setting psd now')
     Strains.set_psd(psddict)
-
     # Shoule we make injection?
     if injection:
         # Checking ra, de
@@ -420,7 +419,7 @@ def main(argv = None):
     else:
         logging.info(f'Output prefix {fsave} exists.')
     Strains.plot_psd(fsave = fsave / 'psd.png')
-    
+
     """
     Step.1 Matched filtering & Skymap
     """
