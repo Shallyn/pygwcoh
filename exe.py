@@ -420,6 +420,7 @@ def main(argv = None):
     else:
         logging.info(f'Output prefix {fsave} exists.')
     Strains.plot_psd(fsave = fsave / 'psd.png')
+    
     """
     Step.1 Matched filtering & Skymap
     """
