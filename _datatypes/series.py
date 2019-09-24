@@ -140,7 +140,7 @@ class TimeSeries(Series):
         else:
             return self
 
-    def plot(self, fsave,
+    def plot(self, fsave, gps = 0,
              xrange = None, yrange = None,
              xlabel = None, ylabel = None,
              figsize = None, pset = None,
@@ -153,9 +153,14 @@ class TimeSeries(Series):
             val = np.abs(self.value)
         if title is None:
             title = self._info
+        xrg = (xrange[0] - gps, xrange[1] - gps)
         plt.figure(figsize = figsize)
-        plt.plot(self.time, val)
-        plt.xlim(xrange)
+        plt.plot(self.time - gps, val)
+        if gps == 0:
+            plt.xlabel(f'gps time')
+        else:
+            plt.xlabel(f'gps time since {xrg[0] - gps}')
+        plt.xlim(xrg)
         plt.ylim(yrange)
         plt.title(title)
         plt.savefig(fsave, dpi = 200)

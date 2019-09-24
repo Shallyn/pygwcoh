@@ -120,7 +120,7 @@ def parseargs(argv):
     parser.add_option('--dimless', action = 'store_true', help = 'If added, will use nature dimemsion unit for initial frequency.')
     parser.add_option('--gaussian', action = 'store_true', help = 'If added, will generate gaussian noise using given psd.')
     parser.add_option('--plot-mode', type = 'str', default = 'all', help = 'Option for plot setting [all]')
-    parser.add_option('--background-collect', type = 'int', default = 50, help = 'Used for background collection.')
+    parser.add_option('--background-collect', type = 'int', default = 100, help = 'Used for background collection.')
 
     args = parser.parse_args(argv)
     return args
@@ -432,14 +432,14 @@ def main(argv = None):
     """
     logging.info('Ploting coherent SNR skymap & SNR time series...')
     skymap.plot_skymap(fsave, plot_peak = True)
-    skymap.plot_coherent_snr(fsave / f'Coherent_SNR.png')
-    for snr in SNRs:
-        snr.plot(fsave = fsave / f'SNR_{snr.ifo}.png', 
-            pset = 'abs')
-        snr.plot(fsave = fsave / f'SNR_{snr.ifo}_zoom.png',
-            pset = 'abs', xrange = [gps - trange_peak[0], gps + trange_peak[1]])
-
     gps_max = skymap.max_gps_time
+    skymap.plot_coherent_snr(fsave / f'Coherent_SNR.png', gps = gps_max)
+    for snr in SNRs:
+        snr.plot(fsave = fsave / f'SNR_{snr.ifo}.png', gps = gps_max,
+            pset = 'abs')
+        snr.plot(fsave = fsave / f'SNR_{snr.ifo}_zoom.png', gps = gps_max,
+            pset = 'abs', xrange = [gps - trange_peak[0]*2, gps + trange_peak[1]*2])
+
     logging.info(f'Coherent SNR peak at geocent time {gps_max}, while gps input is {gps}')
     """
     Step.3 Qscan...
@@ -573,7 +573,8 @@ def main(argv = None):
     idx_sigma = np.where( delta == np.min(delta) )[0][0]
     sigma = n[idx_sigma]
 
-    FAP = np.exp(- np.power((traceSNR_int - Xmu) / sigma,2) / 2 ) / np.sqrt(2*np.pi) / sigma
+    #FAP = np.exp(- np.power((traceSNR_int - Xmu) / sigma,2) / 2 ) / np.sqrt(2*np.pi) / sigma
+    FAP = len(np.where(backSNR_int > traceSNR_int)[0]) / len(backSNR_int)
     FAR = FAP / Time_total
     LOGGER.warning(f'FAP: {FAP}\n')
     LOGGER.warning(f'FAR: {FAR}\n')
@@ -582,6 +583,7 @@ def main(argv = None):
     plt.title(f'FAR = {FAR}')
     plt.legend()
     plt.xlabel('trace SNR')
+    plt.xlim([0, max(traceSNR_int * 1.2, 3 * sigma)])
     plt.savefig(fsave/'significance.png', dpi = 200)
     plt.close()
 

@@ -49,7 +49,7 @@ class Skymap(object):
         max_ra = max_ra[0]
         return max_ra - np.pi, np.pi/2 - max_de
 
-    def plot_coherent_snr(self, fsave,
+    def plot_coherent_snr(self, fsave, gps = 0,
                         figsize = None,
                         title = None):
         if figsize is None:
@@ -57,7 +57,11 @@ class Skymap(object):
         if title is None:
             title = 'Coherent SNR'
         plt.figure(figsize = figsize)
-        plt.plot(self._geocent_times, self._coh_snr)
+        plt.plot(self._geocent_times - gps, self._coh_snr)
+        if gps == 0:
+            plt.xlabel('geocent gps time')
+        else:
+            plt.xlabel(f'geocent gps time since {self._geocent_times[0] - gps}')
         plt.title(title)
         plt.savefig(fsave, dpi = 200)
         plt.close()
