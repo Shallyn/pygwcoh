@@ -13,6 +13,7 @@ from ._datatypes.strain import CreateEmptySpectrum, gwStrain
 from ._datatypes.series import TimeFreqSpectrum
 from ._utils import interp2d_complex, LOGGER
 from scipy import signal as scipysignal
+import matplotlib.pyplot as plt
 
 DEFAULT_SBACK = 0.5
 DEFAULT_SFWD = 0.5
@@ -206,6 +207,18 @@ class gwStrainCoherent(object):
                 strain.set_psd(refpsd[strain.ifo])
             else:
                 LOGGER.warning(f'Cannot set psd for strain {strain.ifo}\n')
+
+    def plot_psd(self, fsave):
+        freqs = np.fft.rfftfreq( int(self._duration * self._fs), 1./self._fs)
+        plt.figure(figsize = (10,8))
+        for strain in self:
+            plt.loglog(freqs, power_vec, label = strain.ifo)
+        plt.xlabel('freq [Hz]')
+        plt.ylabel('$S_h \[Hz^{-1}\]$')
+        plt.legend()
+        plt.title('Power Spectral Density')
+        plt.savefig(fsave, dpi = 200)
+        plt.close()
 
     def iter_matched_filter(self, tmpl, **kwargs):
         """

@@ -350,6 +350,7 @@ def main(argv = None):
         Strains.load_data(cache = cache, ifos = ifos, channel = channel)
     logging.info('Setting psd')
     Strains.set_psd(psddict)
+    Strains.plot_psd(fsave = fsave / 'psd.png')
     # Shoule we make injection?
     if injection:
         # Checking ra, de
