@@ -216,7 +216,7 @@ class gwStrainCoherent(object):
             plt.loglog(freqs, power_vec, label = strain.ifo)
         plt.xlabel('freq [Hz]')
         plt.ylabel('$S_h [Hz^{-1}]$')
-        plt.xlim([20, freqs[-1]])
+        plt.xlim([10, freqs[-1]])
         plt.legend()
         plt.title('Power Spectral Density')
         plt.savefig(fsave, dpi = 200)
