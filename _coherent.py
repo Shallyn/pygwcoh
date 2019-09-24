@@ -212,6 +212,7 @@ class gwStrainCoherent(object):
         freqs = np.fft.rfftfreq( int(self._duration * self._fs), 1./self._fs)
         plt.figure(figsize = (10,8))
         for strain in self:
+            power_vec = strain.psdfun_set(freqs)
             plt.loglog(freqs, power_vec, label = strain.ifo)
         plt.xlabel('freq [Hz]')
         plt.ylabel('$S_h \[Hz^{-1}\]$')
