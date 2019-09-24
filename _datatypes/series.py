@@ -153,7 +153,10 @@ class TimeSeries(Series):
             val = np.abs(self.value)
         if title is None:
             title = self._info
-        xrg = (xrange[0] - gps, xrange[1] - gps)
+        if xrange is None:
+            xrg = None
+        else:
+            xrg = (xrange[0] - gps, xrange[1] - gps)
         plt.figure(figsize = figsize)
         plt.plot(self.time - gps, val)
         if gps == 0:
