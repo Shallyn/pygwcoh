@@ -162,7 +162,11 @@ class TimeSeries(Series):
         if gps == 0:
             plt.xlabel(f'gps time')
         else:
-            plt.xlabel(f'gps time since {xrg[0] - gps}')
+            if xrg is None:
+                gpsini = self.time[0]
+            else:
+                gpsini = xrg[0] + gps
+            plt.xlabel(f'gps time since {gpsini}')
         plt.xlim(xrg)
         plt.ylim(yrange)
         plt.title(title)
