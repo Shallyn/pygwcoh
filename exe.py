@@ -581,7 +581,7 @@ def main(argv = None):
     FAPstr = '%.3e'%FAP
     FAR = max(1,NFalse) / Time_total
     FARstr = '%.3e'%FAR
-    FAR_lb = 1 ./ Time_total
+    FAR_lb = 1 / Time_total
     FARstr_lb = '%.3e'%FAR_lb
     LOGGER.warning(f'FAP: {FAP}\n')
     LOGGER.warning(f'FAR: {FAR}\n')
