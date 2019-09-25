@@ -517,14 +517,15 @@ def main(argv = None):
     traceSNR_int = np.average(traceSNR)
 
     backSNR_int = []
-    Time_total = sback+sfwd
+    sback_back = sback * 10
+    Time_total = sback_back+sfwd
     index = 0
     counter = 0
     while (index < iter_back):
         counter += 1
         logging.info('Calculating background...')
         gps_back = gps_max - (500 + np.random.random() * 50) * counter
-        backStrains = gwStrainCoherent(gps_back - sback, sback+sfwd, fs = fs, verbose = False)
+        backStrains = gwStrainCoherent(gps_back - sback_back, sback_back+sfwd, fs = fs, verbose = False)
         backStrains.load_data(cache = cache, ifos = ifos, channel = channel)
         backStrains.set_psd(psddict)
         backSNRs, backskymap = \
@@ -547,7 +548,7 @@ def main(argv = None):
             continue
         backSNR_int += tmp
         index += 1
-        Time_total += sback + sfwd
+        Time_total += sback_back + sfwd
 
     plt.plot(freqs, traceSNR, label = 'trace')
     if injection:
