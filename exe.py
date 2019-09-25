@@ -575,8 +575,9 @@ def main(argv = None):
     sigma = n[idx_sigma]
 
     #FAP = np.exp(- np.power((traceSNR_int - Xmu) / sigma,2) / 2 ) / np.sqrt(2*np.pi) / sigma
+    NFalse = len(np.where(backSNR_int > traceSNR_int)[0])
     FAP = len(np.where(backSNR_int > traceSNR_int)[0]) / len(backSNR_int)
-    FAR = FAP / Time_total
+    FAR = max(1,NFalse) / Time_total
     LOGGER.warning(f'FAP: {FAP}\n')
     LOGGER.warning(f'FAR: {FAR}\n')
 
