@@ -578,12 +578,14 @@ def main(argv = None):
     #FAP = np.exp(- np.power((traceSNR_int - Xmu) / sigma,2) / 2 ) / np.sqrt(2*np.pi) / sigma
     NFalse = len(np.where(backSNR_int > traceSNR_int)[0])
     FAP = len(np.where(backSNR_int > traceSNR_int)[0]) / len(backSNR_int)
+    FAPstr = '%.3e'%FAP
     FAR = max(1,NFalse) / Time_total
+    FARstr = '%.3e'%FAR
     LOGGER.warning(f'FAP: {FAP}\n')
     LOGGER.warning(f'FAR: {FAR}\n')
 
     plt.plot([traceSNR_int, traceSNR_int], [0, 1], '--', color = 'red', alpha = 0.5, label = 'foreground')
-    plt.title(f'FAR = {FAR}')
+    plt.title(f'FAP = {FAPstr} FAR = {FARstr}')
     plt.legend()
     plt.xlabel('trace SNR')
     plt.xlim([0, max(traceSNR_int * 1.2, 3 * sigma)])
