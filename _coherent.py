@@ -181,6 +181,8 @@ class gwStrainCoherent(object):
         df = hfreq[1] - hfreq[0]
         ret = {}
 
+        kmin = int(20 / df)
+
         A_1_Mpc = np.sqrt(5/24/np.pi) * (cst.G.value * cst.M_sun.value / cst.c.value**2 / cst.pc.value / 1e6)
         A_1_Mpc *= np.power(np.pi * cst.G.value * cst.M_sun.value / cst.c.value**3, -1.0/6.0)
         A_1_Mpc *= np.sqrt(0.7) * np.power(2.8, 1/3)
@@ -191,7 +193,7 @@ class gwStrainCoherent(object):
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
-            tmp = 4*np.sum(np.power(hfreq, -7/3) / power_vec) * df
+            tmp = 4*np.sum(np.power(hfreq[kmin:], -7/3) / power_vec[kmin:]) * df
             horizon = A_1_Mpc * np.sqrt(tmp) / 8
             print(f'Horizon = {horizon}')
 
