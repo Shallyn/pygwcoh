@@ -175,6 +175,7 @@ class gwStrainCoherent(object):
             hinj, hmatch = padinsert(hinj, hmatch)
         else:
             hinj = hinj
+        distance = tmpl_inj.distance
         hrtilde = np.fft.rfft(hmatch.real)
         hitilde = np.fft.rfft(hmatch.imag)
         hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
@@ -194,13 +195,10 @@ class gwStrainCoherent(object):
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
             tmp = 4*np.sum(np.power(hfreq[kmin:], -7/3) / power_vec[kmin:]) * df
-            horizon = A_1_Mpc * np.sqrt(tmp) / 8
-            print(f'Horizon = {horizon}')
-
-            snr2 = 1 * (stilde * stilde.conjugate() / power_vec).sum() * df
-            snr2 = snr2.real
-            ret[strain.ifo] = np.sqrt(snr2)
-            SNR2 += snr2
+            horizon = A_1_Mpc * np.sqrt(tmp) * 8
+            snr = horizon / distance
+            ret[strain.ifo] = snr
+            SNR2 += snr**2
         rescaled =  snr_expected / np.sqrt(SNR2)
         LOGGER.info(f'rescaled distance = {tmpl.distance / rescaled} Mpc\n')
         for strain in self:
