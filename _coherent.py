@@ -14,6 +14,7 @@ from ._datatypes.series import TimeFreqSpectrum
 from ._utils import interp2d_complex, LOGGER
 from scipy import signal as scipysignal
 import matplotlib.pyplot as plt
+import astropy.constants as cst
 
 DEFAULT_SBACK = 0.5
 DEFAULT_SFWD = 0.5
@@ -179,11 +180,20 @@ class gwStrainCoherent(object):
         hfreq = np.fft.rfftfreq(hmatch.size, 1./self._fs)
         df = hfreq[1] - hfreq[0]
         ret = {}
+
+        A_1_Mpc = np.sqrt(5/24/np.pi) * (cst.G.value * cst.M_sun.value / cst.c.value**2 / cst.pc.value / 1e6)
+        A_1_Mpc *= np.power(np.pi * cst.G.value * cst.M_sun.value / cst.c.value**3, -1.0/6.0)
+        A_1_Mpc *= np.sqrt(0.7) * np.power(2.8, 1/3)
+        A_1_Mpc = np.abs(A_1_Mpc)
+
         for strain in self:
             at = strain.ifo_antenna_pattern(ra_inj, de_inj, psi, gps)
             signal = at[0]*hinj.real + at[1]*hinj.imag
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
+            tmp = 4*np.sum(np.power(hfreq, -7/3) / power_vec) * df
+            horizon = A_1_Mpc * np.sqrt(tmp) / 8
+            print(f'Horizon = {horizon}')
 
             snr2 = 1 * (stilde * stilde.conjugate() / power_vec).sum() * df
             snr2 = snr2.real
