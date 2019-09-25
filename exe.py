@@ -581,11 +581,13 @@ def main(argv = None):
     FAPstr = '%.3e'%FAP
     FAR = max(1,NFalse) / Time_total
     FARstr = '%.3e'%FAR
+    FAR_lb = 1 ./ Time_total
+    FARstr_lb = '%.3e'%FAR_lb
     LOGGER.warning(f'FAP: {FAP}\n')
     LOGGER.warning(f'FAR: {FAR}\n')
 
     plt.plot([traceSNR_int, traceSNR_int], [0, 1], '--', color = 'red', alpha = 0.5, label = 'foreground')
-    plt.title(f'FAP = {FAPstr} FAR = {FARstr}')
+    plt.title(f'FAP = {FAPstr} FAR = {FARstr}({FARstr_lb})')
     plt.legend()
     plt.xlabel('trace SNR')
     plt.xlim([0, max(traceSNR_int * 1.2, 3 * sigma)])
