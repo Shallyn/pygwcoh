@@ -185,12 +185,8 @@ class gwStrainCoherent(object):
             stilde = np.fft.rfft(signal)
             power_vec = strain.psdfun_set(hfreq)
 
-            sigmasq_r = 1 * (hrtilde * hrtilde.conjugate() / power_vec).sum() * df
-            snr_r = 1 * (stilde * hrtilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_r))
-
-            sigmasq_i = 1 * (hitilde * hitilde.conjugate() / power_vec).sum() * df
-            snr_i = 1 * (stilde * hitilde.conjugate() / power_vec).sum() * df / np.sqrt(np.abs(sigmasq_i))
-            snr2 = snr_r.real**2 + snr_i.real**2
+            snr2 = 1 * (stilde * stilde.conjugate() / power_vec).sum() * df
+            snr2 = snr2.real
             ret[strain.ifo] = np.sqrt(snr2)
             SNR2 += snr2
         rescaled =  snr_expected / np.sqrt(SNR2)
