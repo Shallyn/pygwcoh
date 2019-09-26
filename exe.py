@@ -517,7 +517,7 @@ def main(argv = None):
     traceSNR_int = np.average(traceSNR)
 
     backSNR_int = []
-    sback_back = sback * 10
+    sback_back = sback * 2
     Time_total = sback_back+sfwd
     index = 0
     counter = 0
